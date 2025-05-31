@@ -31,7 +31,7 @@ const UserProfile = () => {
           return;
         }
 
-        const response = await fetch('http://127.0.0.1:8000/api/user/profile/', {
+        const response = await fetch('https://my-django-backend-q997.onrender.com/api/user/profile/', {
           headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json'
@@ -56,7 +56,7 @@ const UserProfile = () => {
           // Проверяем, содержит ли URL уже домен
           const avatarUrl = data.avatar.startsWith('http') ? 
             data.avatar : 
-            `http://localhost:8000${data.avatar}`;
+            `https://my-django-backend-q997.onrender.com${data.avatar}`;
           setAvatarPreview(avatarUrl);
         }
       } catch (error) {
@@ -88,7 +88,7 @@ const UserProfile = () => {
       const formData = new FormData();
       formData.append('avatar', fileInputRef.current.files[0]);
   
-      const response = await fetch('http://127.0.0.1:8000/upload-avatar/', {
+      const response = await fetch('https://my-django-backend-q997.onrender.com/upload-avatar/', {
         method: 'PATCH',
         headers: {
           'Authorization': `Token ${token}`,
@@ -106,7 +106,7 @@ const UserProfile = () => {
       if (data.avatar) {
         const avatarUrl = data.avatar.startsWith('http') ? 
           data.avatar : 
-          `http://localhost:8000${data.avatar}`;
+          `https://my-django-backend-q997.onrender.com${data.avatar}`;
         setAvatarPreview(avatarUrl);
       }
       
