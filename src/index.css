@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@font-face {
+    font-family: 'Bebas Neue Cyrillic';
+    src: url('./Fonts/Bebas/bebasneuecyrillic.ttf') format('truetype'); 
+    font-display: swap;  
+  }
+
+@font-face {
+    font-family: 'Manrope';
+    src: url('./Fonts/Manrope/Manrope.ttf') format('truetype');
+    font-display: swap;  
+}
+
+h1,h2,h3,h4,h5 {
+  margin: 0;
+  padding: 0;
+}
+
+h1,h2,h3,h4,h5 {
+  height: auto;
+  line-height: normal;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+
+/* Анимации для секции Статистики */
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-150px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(150px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(150px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-150px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-item {
+  opacity: 0;
+}
+
+.stat-item.animate {
+  animation-fill-mode: forwards;
+  animation-duration: 0.8s;
+  animation-timing-function: ease-out;
+}
+
+.stat-left.animate {
+  animation-name: slideFromLeft;
+}
+
+.stat-right.animate {
+  animation-name: slideFromRight;
+}
+
+.stat-bottom.animate {
+  animation-name: slideFromBottom;
+}
+
+.stat-top.animate {
+  animation-name: slideFromTop;
+}
+
+/* Сброс автоматического заполнения полей */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
