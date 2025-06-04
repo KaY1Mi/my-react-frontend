@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import HeaderBlack from '../HeaderBlack';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
-import plus from '../assets/plus.svg';
+import plus from '../../Image/svg/plus.svg'
 import { useNavigate } from 'react-router-dom';
 import { translations } from '../translation';
 import { LanguageContext } from './LanguageContext';
