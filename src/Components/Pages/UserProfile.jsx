@@ -88,7 +88,7 @@ const UserProfile = () => {
       const formData = new FormData();
       formData.append('avatar', fileInputRef.current.files[0]);
   
-      const response = await fetch('https://my-django-backend-rrxo.onrender.com/upload-avatar/', {
+      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/upload-avatar/', {
         method: 'PATCH',
         headers: {
           'Authorization': `Token ${token}`,
