@@ -7,6 +7,7 @@ import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import  {  useContext } from 'react';
 import { LanguageContext } from './LanguageContext'; // Импортируем ко
+import Parse from '../Pages/parseClient.js'
 
 
 const UserProfile = () => {
@@ -27,49 +28,39 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
+        const currentUser = Parse.User.current();
+        if (!currentUser) {
           navigate('/login');
           return;
         }
-
-        const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
-          headers: {
-            'Authorization': `Token ${token}`,
-            'Content-Type': 'application/json'
-          }
+  
+        const query = new Parse.Query('UserProfile');
+        query.equalTo('email', currentUser.getEmail());
+  
+        const userProfile = await query.first();
+  
+        if (!userProfile) {
+          throw new Error('User profile not found');
+        }
+  
+        const avatarFile = userProfile.get('avatar');
+        const avatarUrl = avatarFile ? avatarFile.url() : null;
+  
+        setUserData({
+          username: currentUser.getUsername(),
+          email: currentUser.getEmail(),
+          avatar: avatarUrl,
         });
-        
-        if (!response.ok) {
-          if (response.status === 401) {
-            localStorage.removeItem('token');
-            navigate('/login');
-          }
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('User data:', data); // Для отладки
-        
-        setUserData(data);
-        
-        // Обработка аватара
-        if (data.avatar) {
-          // Проверяем, содержит ли URL уже домен
-          const avatarUrl = data.avatar.startsWith('http') ? 
-            data.avatar : 
-            `https://my-django-backend-rrxo.onrender.com${data.avatar}`;
-          setAvatarPreview(avatarUrl);
-        }
+  
+        setAvatarPreview(avatarUrl);
       } catch (error) {
         console.error('Fetch error:', error);
-        setError(error.message);
         navigate('/login');
       } finally {
         setLoading(false);
       }
     };
-    
+  
     fetchUserData();
   }, [navigate]);
 
@@ -80,47 +71,51 @@ const UserProfile = () => {
       return;
     }
   
-    const file = fileInputRef.current.files[0];
-    const user = await supabase.auth.getUser();
-    const userId = user.data?.user?.id;
+    try {
+      const file = fileInputRef.current.files[0];
   
-    if (!userId) {
-      alert("User not authenticated");
-      navigate('/login');
-      return;
+      // Создаём Parse.File с твоим файлом
+      const parseFile = new Parse.File(file.name, file);
+  
+      // Загружаем файл на Back4App
+      await parseFile.save();
+  
+      // Получаем текущего пользователя Parse (если есть)
+      const currentUser = Parse.User.current();
+  
+      if (!currentUser) {
+        alert("User not authenticated");
+        navigate('/login');
+        return;
+      }
+  
+      // Получаем объект класса UserProfile (или как у тебя называется)
+      const query = new Parse.Query('UserProfile');
+      query.equalTo('email', userData.email); // или ищи по id пользователя Parse
+  
+      const userProfile = await query.first();
+  
+      if (userProfile) {
+        userProfile.set('avatar', parseFile);
+        await userProfile.save();
+      } else {
+        const UserProfile = Parse.Object.extend('UserProfile');
+        const newUser = new UserProfile();
+        newUser.set('email', userData.email);
+        newUser.set('avatar', parseFile);
+        await newUser.save();
+      }
+  
+      setAvatarPreview(parseFile.url());
+      setIsAvatarChanged(false);
+  
+      setUserData(prev => ({ ...prev, avatar: parseFile.url() }));
+  
+      alert(t.changes_saved || "ИЗМЕНЕНИЯ СОХРАНЕНЫ");
+    } catch (error) {
+      console.error('Ошибка загрузки аватара:', error);
+      alert('Ошибка загрузки аватара');
     }
-  
-    const fileExt = file.name.split('.').pop();
-    const fileName = `avatar.${fileExt}`;
-    const filePath = `avatars/${userId}/${fileName}`;
-  
-    // Загружаем файл в Supabase Storage (bucket 'avatars' должен существовать)
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(filePath, file, { upsert: true });
-  
-    if (uploadError) {
-      alert(uploadError.message);
-      return;
-    }
-  
-    // Получаем публичный URL аватара
-    const { data: { publicUrl }, error: urlError } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(filePath);
-  
-    if (urlError) {
-      alert(urlError.message);
-      return;
-    }
-  
-    setAvatarPreview(publicUrl);
-    setIsAvatarChanged(false);
-  
-    // Если хочешь, обнови профиль на бэкенде или локально
-    setUserData(prev => ({ ...prev, avatar: publicUrl }));
-  
-    alert(t.changes_saved || "ИЗМЕНЕНИЯ СОХРАНЕНЫ");
   };
 
   // Остальные обработчики остаются без изменений
