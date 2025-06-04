@@ -7,7 +7,7 @@ import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import  {  useContext } from 'react';
 import { LanguageContext } from './LanguageContext'; // Импортируем ко
-import { supabase } from '../../supabaseClient';
+
 
 const UserProfile = () => {
   const { language } = useContext(LanguageContext); // Получаем язык из контекста
