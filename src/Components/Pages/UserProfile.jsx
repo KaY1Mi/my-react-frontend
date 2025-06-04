@@ -7,9 +7,6 @@ import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import  {  useContext } from 'react';
 import { LanguageContext } from './LanguageContext'; // Импортируем ко
-
-
-
 const UserProfile = () => {
   const { language } = useContext(LanguageContext); // Получаем язык из контекста
   const t = translations[language];  
@@ -77,51 +74,49 @@ const UserProfile = () => {
   // Сохранение изменений аватара
   const handleSaveChanges = async () => {
     if (!isAvatarChanged || !fileInputRef.current?.files[0]) {
-      alert(t.no_changes || "Нет изменений для сохранения");
+      alert(t.no_changes || "Нет изменений для сохранения"); // Добавляем fallback
       return;
     }
   
-    const file = fileInputRef.current.files[0];
-    const user = await supabase.auth.getUser();
-    const userId = user.data?.user?.id;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
   
-    if (!userId) {
-      alert("User not authenticated");
-      navigate('/login');
-      return;
+      const formData = new FormData();
+      formData.append('avatar', fileInputRef.current.files[0]);
+  
+      const response = await fetch('https://my-django-backend-rrxo.onrender.com/upload-avatar/', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Token ${token}`,
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error(t.avatar_upload_error || "Ошибка загрузки аватара");
+      }
+  
+      const data = await response.json();
+      console.log('Avatar updated:', data);
+      
+      if (data.avatar) {
+        const avatarUrl = data.avatar.startsWith('http') ? 
+          data.avatar : 
+          `https://my-django-backend-rrxo.onrender.com${data.avatar}`;
+        setAvatarPreview(avatarUrl);
+      }
+      
+      alert(t.changes_saved || "ИЗМЕНЕНИЯ СОХРАНЕНЫ"); // Добавляем fallback
+      setIsAvatarChanged(false);
+      setUserData(prev => ({...prev, avatar: data.avatar}));
+    } catch (err) {
+      console.error('Error:', err);
+      alert(err.message || t.avatar_upload_error || "Ошибка загрузки аватара");
     }
-  
-    const fileExt = file.name.split('.').pop();
-    const fileName = `avatar.${fileExt}`;
-    const filePath = `avatars/${userId}/${fileName}`;
-  
-    // Загружаем файл в Supabase Storage (bucket 'avatars' должен существовать)
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(filePath, file, { upsert: true });
-  
-    if (uploadError) {
-      alert(uploadError.message);
-      return;
-    }
-  
-    // Получаем публичный URL аватара
-    const { data: { publicUrl }, error: urlError } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(filePath);
-  
-    if (urlError) {
-      alert(urlError.message);
-      return;
-    }
-  
-    setAvatarPreview(publicUrl);
-    setIsAvatarChanged(false);
-  
-    // Если хочешь, обнови профиль на бэкенде или локально
-    setUserData(prev => ({ ...prev, avatar: publicUrl }));
-  
-    alert(t.changes_saved || "ИЗМЕНЕНИЯ СОХРАНЕНЫ");
   };
 
   // Остальные обработчики остаются без изменений
