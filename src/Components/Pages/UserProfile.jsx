@@ -6,7 +6,7 @@ import plus from '../../Image/svg/plus.svg';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import { LanguageContext } from './LanguageContext';
-import { supabase } from '../../supabaseClient';
+import { supabase } from '../Pages/supabaseClient.js'
 
 const UserProfile = () => {
   const { language } = useContext(LanguageContext);
