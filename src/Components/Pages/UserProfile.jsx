@@ -32,7 +32,7 @@ const UserProfile = () => {
         if (!res.ok) throw new Error('Ошибка загрузки профиля');
         const data = await res.json();
         setUserData(data);
-        setAvatarPreview(data.avatar);
+        setAvatarPreview(data.avatar?.startsWith('http') ? data.avatar : `https://my-django-backend-rrxo.onrender.com${data.avatar}`);
       } catch (err) {
         console.error(err);
         navigate('/login');
@@ -49,6 +49,14 @@ const UserProfile = () => {
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (!file.type.match('image.*')) {
+        alert(t.avatar_error_type);
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert(t.avatar_upload_error);
+        return;
+      }
       setSelectedFile(file);
       setAvatarPreview(URL.createObjectURL(file));
       setIsAvatarChanged(true);
@@ -93,22 +101,28 @@ const UserProfile = () => {
       <main className="min-h-screen">
         <HeaderBlack language={language} setLanguage={setLanguage} />
 
-        <section className="grid grid-cols-2 py-5 gap-5 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-10">
+        <section className="grid grid-cols-2 py-5 gap-5 md:grid-cols-4 md:gap-5 lg:grid-cols-4 xl:grid-cols-10">
           {/* Меню */}
           <div className="col-span-full xl:col-span-4">
-            <button onClick={() => navigate("/profile")} className="text-2xl w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] hover:bg-neutal-blue px-2.5 py-2.5 md:px-5">
-              {t.link_userprofile}
+            <button 
+              onClick={() => navigate("/profile")}
+              className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
+              {t.link_userprofile}  
             </button>
-            <button onClick={() => navigate("/likecourses")} className="text-2xl w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] hover:bg-neutal-blue px-2.5 py-2.5 md:px-5">
-              {t.link_linkcourses}
+            <button 
+              onClick={() => navigate("/likecourses")}
+              className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
+              {t.link_linkcourses}  
             </button>
-            <button onClick={() => setShowLogoutModal(true)} className="text-2xl w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] hover:bg-neutal-blue px-2.5 py-2.5 md:px-5">
-              {t.link_logout}
+            <button
+              onClick={() => setShowLogoutModal(true)} 
+              className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
+              {t.link_logout}  
             </button>
           </div>
 
           {showLogoutModal && (
-            <LogoutModal
+            <LogoutModal 
               onClose={() => setShowLogoutModal(false)}
               onConfirm={handleLogout}
               language={language}
@@ -118,10 +132,17 @@ const UserProfile = () => {
           {/* Профиль */}
           <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
             <div className="grid grid-cols-1 gap-5">
-              <div className="relative w-[250px] h-[250px] justify-self-center group xl:justify-self-start cursor-pointer" onClick={handleAvatarClick}>
+              <div 
+                className="relative w-[250px] h-[250px] justify-self-center cursor-pointer group xl:justify-self-start"
+                onClick={handleAvatarClick}
+              >
                 <div className="w-full h-full rounded-full bg-gray-200 overflow-hidden flex items-center justify-center border-2 border-gray-300">
                   {avatarPreview ? (
-                    <img src={avatarPreview} alt="User avatar" className="w-full h-full object-cover" />
+                    <img 
+                      src={avatarPreview} 
+                      alt="User avatar" 
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <div className="text-gray-400 text-lg">{t.no_avatar}</div>
                   )}
@@ -149,8 +170,8 @@ const UserProfile = () => {
                   </p>
                 </div>
 
-                <button
-                  type="button"
+                <button 
+                  type="button" 
                   className="bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4"
                   onClick={handleSaveChanges}
                   disabled={!isAvatarChanged}
