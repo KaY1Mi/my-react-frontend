@@ -1,29 +1,26 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import HeaderBlack from '../HeaderBlack';
-import { translations } from '../translation';
-import { useNavigate } from 'react-router-dom';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
+import plus from '../assets/plus.svg';
+import { useNavigate } from 'react-router-dom';
+import { translations } from '../translation';
 import { LanguageContext } from './LanguageContext';
 
-const AVATARS = [
-  '/avatars/avatar1.png',
-  '/avatars/avatar2.png',
-  '/avatars/avatar3.png',
-];
-
 const UserProfile = () => {
-  const { language } = useContext(LanguageContext);
+  const { language, setLanguage } = useContext(LanguageContext);
   const t = translations[language];
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [userData, setUserData] = useState({});
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const [isAvatarChanged, setIsAvatarChanged] = useState(false);
+
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUser = async () => {
       const token = localStorage.getItem('token');
       if (!token) return navigate('/login');
 
@@ -32,49 +29,57 @@ const UserProfile = () => {
           headers: { 'Authorization': `Token ${token}` },
         });
 
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        if (!res.ok) throw new Error('Ошибка загрузки профиля');
         const data = await res.json();
         setUserData(data);
-
-        const index = AVATARS.findIndex(url => url === data.avatar);
-        setSelectedAvatarIndex(index !== -1 ? index : null);
+        setAvatarPreview(data.avatar);
       } catch (err) {
-        setError(err.message);
+        console.error(err);
         navigate('/login');
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchUserData();
+    fetchUser();
   }, [navigate]);
 
-  const handleSaveChanges = async () => {
-    if (selectedAvatarIndex === null) {
-      alert(t.no_changes || "Нет изменений для сохранения");
-      return;
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+      setIsAvatarChanged(true);
     }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!selectedFile) return;
 
     const token = localStorage.getItem('token');
     if (!token) return navigate('/login');
 
+    const formData = new FormData();
+    formData.append('avatar', selectedFile);
+
     try {
       const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Token ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ avatar: AVATARS[selectedAvatarIndex] }),
+        headers: { 'Authorization': `Token ${token}` },
+        body: formData,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.detail || 'Ошибка обновления аватара');
+      if (!res.ok) throw new Error('Ошибка при загрузке аватара');
 
-      setUserData(prev => ({ ...prev, avatar: data.avatar }));
-      alert(t.changes_saved || "Изменения сохранены");
+      const data = await res.json();
+      setAvatarPreview(data.avatar);
+      setIsAvatarChanged(false);
+      alert(t.changes_saved || 'Изменения сохранены');
     } catch (err) {
-      alert(err.message || t.avatar_upload_error || "Ошибка");
+      console.error(err);
+      alert(t.avatar_upload_error || 'Ошибка загрузки аватара');
     }
   };
 
@@ -83,64 +88,84 @@ const UserProfile = () => {
     navigate('/login');
   };
 
-  const avatarPreview = selectedAvatarIndex !== null
-    ? AVATARS[selectedAvatarIndex]
-    : userData?.avatar;
-
   return (
-    <div className="min-h-screen overflow-hidden bg-gray-50 text-black">
-      <HeaderBlack language={language} />
+    <div className="overflow-hidden min-h-screen">
+      <main className="min-h-screen">
+        <HeaderBlack language={language} setLanguage={setLanguage} />
 
-      <main className="py-10 px-6 max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-6">{t.select_avatar || 'Выберите аватар'}</h2>
-
-        <div className="flex justify-center mb-8">
-          <div className="w-40 h-40 border-4 border-gray-400 rounded-full overflow-hidden shadow-lg">
-            <img
-              src={avatarPreview}
-              alt="Выбранный аватар"
-              className="w-full h-full object-cover"
-            />
+        <section className="grid grid-cols-2 py-5 gap-5 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-10">
+          {/* Меню */}
+          <div className="col-span-full xl:col-span-4">
+            <button onClick={() => navigate("/profile")} className="text-2xl w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] hover:bg-neutal-blue px-2.5 py-2.5 md:px-5">
+              {t.link_userprofile}
+            </button>
+            <button onClick={() => navigate("/likecourses")} className="text-2xl w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] hover:bg-neutal-blue px-2.5 py-2.5 md:px-5">
+              {t.link_linkcourses}
+            </button>
+            <button onClick={() => setShowLogoutModal(true)} className="text-2xl w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] hover:bg-neutal-blue px-2.5 py-2.5 md:px-5">
+              {t.link_logout}
+            </button>
           </div>
-        </div>
 
-        <div className="flex justify-center gap-6 flex-wrap mb-8">
-          {AVATARS.map((url, index) => (
-            <div
-              key={index}
-              className={`w-24 h-24 rounded-full border-4 cursor-pointer overflow-hidden transition duration-200
-                ${selectedAvatarIndex === index ? 'border-blue-600 scale-105' : 'border-gray-300 hover:border-blue-400 hover:scale-105'}`}
-              onClick={() => setSelectedAvatarIndex(index)}
-            >
-              <img src={url} alt={`Аватар ${index + 1}`} className="w-full h-full object-cover" />
+          {showLogoutModal && (
+            <LogoutModal
+              onClose={() => setShowLogoutModal(false)}
+              onConfirm={handleLogout}
+              language={language}
+            />
+          )}
+
+          {/* Профиль */}
+          <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
+            <div className="grid grid-cols-1 gap-5">
+              <div className="relative w-[250px] h-[250px] justify-self-center group xl:justify-self-start cursor-pointer" onClick={handleAvatarClick}>
+                <div className="w-full h-full rounded-full bg-gray-200 overflow-hidden flex items-center justify-center border-2 border-gray-300">
+                  {avatarPreview ? (
+                    <img src={avatarPreview} alt="User avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-gray-400 text-lg">{t.no_avatar}</div>
+                  )}
+                </div>
+                <div className="absolute bottom-2 right-2 w-[55px] h-[55px] bg-black rounded-full flex items-center justify-center">
+                  <img src={plus} alt="Add avatar" className="w-6 h-6" />
+                </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleAvatarChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 w-full">
+                <h2 className="text-3xl font-bold font-bebas text-center">
+                  {userData.username || 'No username'}
+                </h2>
+                <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
+                  <p className="font-bebas text-4xl">{t.email}:</p>
+                  <p className="font-manrope text-base text-neutal-grey break-all text-right">
+                    {userData.email || 'No email'}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4"
+                  onClick={handleSaveChanges}
+                  disabled={!isAvatarChanged}
+                >
+                  {t.btn_save}
+                </button>
+              </div>
             </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col items-center">
-          <button
-            className="bg-black text-white px-6 py-3 rounded-md font-bold text-lg mb-4 hover:bg-gray-800"
-            onClick={handleSaveChanges}
-            disabled={selectedAvatarIndex === null}
-          >
-            {t.btn_save || 'Сохранить изменения'}
-          </button>
-
-          <button className="text-red-600 underline" onClick={() => setShowLogoutModal(true)}>
-            {t.link_logout || 'Выйти'}
-          </button>
-        </div>
-
-        {showLogoutModal && (
-          <LogoutModal
-            onClose={() => setShowLogoutModal(false)}
-            onConfirm={handleLogout}
-            language={language}
-          />
-        )}
+          </div>
+        </section>
       </main>
 
-      <Footer language={language} />
+      <footer className="bg-neutal-black">
+        <Footer language={language} setLanguage={setLanguage} />
+      </footer>
     </div>
   );
 };
