@@ -89,7 +89,14 @@ const UserProfile = () => {
       });
 
       if (!response.ok) {
-        throw new Error(t.avatar_upload_error || "Ошибка обновления аватара");
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else if (response.status === 500) {
+          setError("Ошибка сервера, попробуйте позже.");
+        } else {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
       }
 
       const data = await response.json();
