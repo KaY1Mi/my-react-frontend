@@ -106,7 +106,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://my-django-backend-q997.onrender.com/api/login/', {
+      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/login/', {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'

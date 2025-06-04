@@ -107,7 +107,7 @@ const RegPage = () => {
 const handleInputSubmit = async(e)=>{
   e.preventDefault()
   try{
-    const response = await fetch('https://my-django-backend-q997.onrender.com/api/register/',{
+    const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/register/',{
       method: "POST",
       headers:{
         'Content-Type': 'application/json'
