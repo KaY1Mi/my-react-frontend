@@ -7,7 +7,7 @@ import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import  {  useContext } from 'react';
 import { LanguageContext } from './LanguageContext'; // Импортируем ко
-import Parse from '../Pages/parseClient.js'
+
 
 
 const UserProfile = () => {
