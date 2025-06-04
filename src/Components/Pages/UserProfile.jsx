@@ -70,15 +70,14 @@ const UserProfile = () => {
       alert(t.no_changes || "Нет изменений для сохранения");
       return;
     }
-
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-
-      // Отправляем просто выбранный URL аватара, который у нас локальный
+  
       const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
         method: 'PATCH',
         headers: {
@@ -87,23 +86,21 @@ const UserProfile = () => {
         },
         body: JSON.stringify({ avatar: AVATARS[selectedAvatarIndex] }),
       });
-
+  
       if (!response.ok) {
         if (response.status === 401) {
           localStorage.removeItem('token');
           navigate('/login');
-        } else if (response.status === 500) {
-          setError("Ошибка сервера, попробуйте позже.");
         } else {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errData = await response.json();
+          throw new Error(errData.error || `HTTP error! status: ${response.status}`);
         }
       }
-
+  
       const data = await response.json();
-      if (data.avatar) {
-        setUserData(prev => ({ ...prev, avatar: data.avatar }));
-        alert(t.changes_saved || "Изменения сохранены");
-      }
+      setUserData(prev => ({ ...prev, avatar: data.avatar }));
+      alert(t.changes_saved || "Изменения сохранены");
+  
     } catch (err) {
       console.error('Error:', err);
       alert(err.message || t.avatar_upload_error || "Ошибка обновления аватара");
