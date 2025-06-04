@@ -6,7 +6,6 @@ import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import { LanguageContext } from './LanguageContext';
 
-// Пусть у тебя есть 3 локальных аватара в папке public/avatars/avatar1.png и т.д.
 const AVATARS = [
   '/avatars/avatar1.png',
   '/avatars/avatar2.png',
@@ -18,44 +17,29 @@ const UserProfile = () => {
   const t = translations[language];
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          navigate('/login');
-          return;
-        }
+      const token = localStorage.getItem('token');
+      if (!token) return navigate('/login');
 
-        const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
-          headers: {
-            'Authorization': `Token ${token}`,
-            'Content-Type': 'application/json',
-          },
+      try {
+        const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
+          headers: { 'Authorization': `Token ${token}` },
         });
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            localStorage.removeItem('token');
-            navigate('/login');
-          }
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
         setUserData(data);
 
-        // Попытаемся определить индекс аватара по URL, если совпадает с одним из AVATARS
-        const currentAvatarIndex = AVATARS.findIndex((avatarUrl) => avatarUrl === data.avatar);
-        setSelectedAvatarIndex(currentAvatarIndex !== -1 ? currentAvatarIndex : null);
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setError(error.message);
+        const index = AVATARS.findIndex(url => url === data.avatar);
+        setSelectedAvatarIndex(index !== -1 ? index : null);
+      } catch (err) {
+        setError(err.message);
         navigate('/login');
       } finally {
         setLoading(false);
@@ -70,15 +54,12 @@ const UserProfile = () => {
       alert(t.no_changes || "Нет изменений для сохранения");
       return;
     }
-  
+
+    const token = localStorage.getItem('token');
+    if (!token) return navigate('/login');
+
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-  
-      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
+      const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
         method: 'PATCH',
         headers: {
           'Authorization': `Token ${token}`,
@@ -86,94 +67,80 @@ const UserProfile = () => {
         },
         body: JSON.stringify({ avatar: AVATARS[selectedAvatarIndex] }),
       });
-  
-      if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          navigate('/login');
-        } else {
-          const errData = await response.json();
-          throw new Error(errData.error || `HTTP error! status: ${response.status}`);
-        }
-      }
-  
-      const data = await response.json();
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.detail || 'Ошибка обновления аватара');
+
       setUserData(prev => ({ ...prev, avatar: data.avatar }));
       alert(t.changes_saved || "Изменения сохранены");
-  
     } catch (err) {
-      console.error('Error:', err);
-      alert(err.message || t.avatar_upload_error || "Ошибка обновления аватара");
+      alert(err.message || t.avatar_upload_error || "Ошибка");
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    setShowLogoutModal(false);
     navigate('/login');
   };
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
-  }
-
-  if (!userData) {
-    return <div className="flex justify-center items-center h-screen">No user data available</div>;
-  }
+  const avatarPreview = selectedAvatarIndex !== null
+    ? AVATARS[selectedAvatarIndex]
+    : userData?.avatar;
 
   return (
-    <div className="overflow-hidden min-h-screen">
-      <main className="min-h-screen">
-        <HeaderBlack language={language} />
+    <div className="min-h-screen overflow-hidden bg-gray-50 text-black">
+      <HeaderBlack language={language} />
 
-        <section className="py-5 px-5">
-          <h2 className="text-3xl font-bold mb-6">{t.select_avatar || 'Выберите аватар'}</h2>
+      <main className="py-10 px-6 max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-6">{t.select_avatar || 'Выберите аватар'}</h2>
 
-          <div className="flex gap-6 justify-center mb-8">
-            {AVATARS.map((avatarUrl, index) => (
-              <div
-                key={index}
-                className={`w-32 h-32 rounded-full overflow-hidden border-4 cursor-pointer 
-                  ${selectedAvatarIndex === index ? 'border-blue-500' : 'border-transparent'}`}
-                onClick={() => setSelectedAvatarIndex(index)}
-              >
-                <img src={avatarUrl} alt={`Avatar ${index + 1}`} className="w-full h-full object-cover" />
-              </div>
-            ))}
+        <div className="flex justify-center mb-8">
+          <div className="w-40 h-40 border-4 border-gray-400 rounded-full overflow-hidden shadow-lg">
+            <img
+              src={avatarPreview}
+              alt="Выбранный аватар"
+              className="w-full h-full object-cover"
+            />
           </div>
+        </div>
 
+        <div className="flex justify-center gap-6 flex-wrap mb-8">
+          {AVATARS.map((url, index) => (
+            <div
+              key={index}
+              className={`w-24 h-24 rounded-full border-4 cursor-pointer overflow-hidden transition duration-200
+                ${selectedAvatarIndex === index ? 'border-blue-600 scale-105' : 'border-gray-300 hover:border-blue-400 hover:scale-105'}`}
+              onClick={() => setSelectedAvatarIndex(index)}
+            >
+              <img src={url} alt={`Аватар ${index + 1}`} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col items-center">
           <button
-            className="bg-neutal-black text-white px-6 py-3 rounded-md font-bebas text-xl"
+            className="bg-black text-white px-6 py-3 rounded-md font-bold text-lg mb-4 hover:bg-gray-800"
             onClick={handleSaveChanges}
             disabled={selectedAvatarIndex === null}
           >
-            {t.btn_save}
+            {t.btn_save || 'Сохранить изменения'}
           </button>
 
-          <button
-            className="mt-5 text-red-600 underline"
-            onClick={() => setShowLogoutModal(true)}
-          >
-            {t.link_logout}
+          <button className="text-red-600 underline" onClick={() => setShowLogoutModal(true)}>
+            {t.link_logout || 'Выйти'}
           </button>
+        </div>
 
-          {showLogoutModal && (
-            <LogoutModal
-              onClose={() => setShowLogoutModal(false)}
-              onConfirm={handleLogout}
-              language={language}
-            />
-          )}
-        </section>
+        {showLogoutModal && (
+          <LogoutModal
+            onClose={() => setShowLogoutModal(false)}
+            onConfirm={handleLogout}
+            language={language}
+          />
+        )}
       </main>
 
-      <footer className="bg-neutal-black">
-        <Footer language={language} />
-      </footer>
+      <Footer language={language} />
     </div>
   );
 };
