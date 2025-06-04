@@ -79,7 +79,7 @@ const UserProfile = () => {
       }
 
       // Отправляем просто выбранный URL аватара, который у нас локальный
-      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/update-avatar/', {
+      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/upload-avatar/', {
         method: 'PATCH',
         headers: {
           'Authorization': `Token ${token}`,
