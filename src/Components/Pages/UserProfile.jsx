@@ -21,9 +21,10 @@ const UserProfile = () => {
 
   // Массив стандартных аватарков
   const defaultAvatars = [
-    'https://my-django-backend-rrxo.onrender.com/media/avatars/default1.png',
-    'https://my-django-backend-rrxo.onrender.com/media/avatars/default2.png',
-    'https://my-django-backend-rrxo.onrender.com/media/avatars/default3.png'
+    'https://my-django-backend-rrxo.onrender.com/media/avatars/иза.jpg',
+    'https://my-django-backend-rrxo.onrender.com/media/avatars/иза.jpg',
+    'https://my-django-backend-rrxo.onrender.com/media/avatars/иза.jpg',
+
   ];
 
   useEffect(() => {
