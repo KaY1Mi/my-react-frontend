@@ -19,6 +19,13 @@ const UserProfile = () => {
   const fileInputRef = useRef(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
 
+  // Массив стандартных аватарков
+  const defaultAvatars = [
+    'https://my-django-backend-rrxo.onrender.com/media/avatars/default1.png',
+    'https://my-django-backend-rrxo.onrender.com/media/avatars/default2.png',
+    'https://my-django-backend-rrxo.onrender.com/media/avatars/default3.png'
+  ];
+
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
@@ -91,6 +98,32 @@ const UserProfile = () => {
     }
   };
 
+  const handleSelectDefaultAvatar = async (avatarUrl) => {
+    const token = localStorage.getItem('token');
+    if (!token) return navigate('/login');
+
+    try {
+      const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
+        method: 'PATCH',
+        headers: { 
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ avatar: avatarUrl }),
+      });
+
+      if (!res.ok) throw new Error('Ошибка при сохранении аватара');
+
+      const data = await res.json();
+      setAvatarPreview(data.avatar);
+      setIsAvatarChanged(false);
+      alert(t.changes_saved || 'Изменения сохранены');
+    } catch (err) {
+      console.error(err);
+      alert(t.avatar_upload_error || 'Ошибка сохранения аватара');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
@@ -157,6 +190,23 @@ const UserProfile = () => {
                   accept="image/*"
                   className="hidden"
                 />
+              </div>
+
+              {/* Блок с выбором стандартных аватарков */}
+              <div className="flex justify-center gap-4 mt-4">
+                {defaultAvatars.map((avatar, index) => (
+                  <div 
+                    key={index} 
+                    className="w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-gray-300 hover:border-blue-500"
+                    onClick={() => handleSelectDefaultAvatar(avatar)}
+                  >
+                    <img 
+                      src={avatar} 
+                      alt={`Default avatar ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
               </div>
 
               <div className="grid grid-cols-1 gap-4 w-full">
