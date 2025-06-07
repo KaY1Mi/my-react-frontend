@@ -31,8 +31,7 @@ const UserProfile = () => {
 
   const getFullAvatarUrl = (avatarPath) => {
     if (!avatarPath) return null;
-    if (avatarPath.startsWith('http')) return avatarPath;
-    return `https://my-django-backend-rrxo.onrender.com${avatarPath}`;
+    return avatarPath; // Cloudinary вернёт абсолютный URL
   };
 
   useEffect(() => {
