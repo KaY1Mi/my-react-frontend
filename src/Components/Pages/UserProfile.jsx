@@ -3,9 +3,9 @@ import HeaderBlack from '../HeaderBlack';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import plus from '../../Image/svg/plus.svg';
-import defaultAvatar1 from '../../Image/avatars/default1.png';
-import defaultAvatar2 from '../../Image/avatars/default2.png';
-import defaultAvatar3 from '../../Image/avatars/default3.png';
+import defaultAvatar1 from '../../Image/webp/avatar1'
+import defaultAvatar2 from '../../Image/webp/avatar2';
+import defaultAvatar3 from '../../Image/webp/avatar3';
 import { useNavigate } from 'react-router-dom';
 import { translations } from '../translation';
 import { LanguageContext } from './LanguageContext';
@@ -24,9 +24,9 @@ const UserProfile = () => {
 
   // Локальные стандартные аватарки
   const defaultAvatars = [
-    { id: 1, image: defaultAvatar1, backendPath: '/public/avatars/avatar1.png' },
-    { id: 2, image: defaultAvatar2, backendPath: '/public/avatars/avatar2.png' },
-    { id: 3, image: defaultAvatar3, backendPath: '/public/avatars/avatar3.png' }
+    { id: 1, image: defaultAvatar1, backendPath: '/media/avatars/default1.png' },
+    { id: 2, image: defaultAvatar2, backendPath: '/media/avatars/default2.png' },
+    { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/default3.png' }
   ];
 
   useEffect(() => {
