@@ -230,9 +230,7 @@ const UserProfile = () => {
                     <div className="text-gray-400 text-lg">{t.no_avatar}</div>
                   )}
                 </div>
-                <div className="absolute bottom-2 right-2 w-[55px] h-[55px] bg-black rounded-full flex items-center justify-center">
-                  <img src={plus} alt="Add avatar" className="w-6 h-6" />
-                </div>
+               
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -273,16 +271,6 @@ const UserProfile = () => {
                   </p>
                 </div>
 
-                <button 
-                  type="button" 
-                  className={`bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4 ${
-                    !isAvatarChanged ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                  onClick={handleSaveChanges}
-                  disabled={!isAvatarChanged}
-                >
-                  {t.btn_save}
-                </button>
               </div>
             </div>
           </div>
