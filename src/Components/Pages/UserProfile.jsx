@@ -24,9 +24,9 @@ const UserProfile = () => {
 
   // Локальные стандартные аватарки
   const defaultAvatars = [
-    { id: 1, image: defaultAvatar1, backendPath: '/media/avatars/default1.png' },
-    { id: 2, image: defaultAvatar2, backendPath: '/media/avatars/default2.png' },
-    { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/default3.png' }
+    { id: 1, image: defaultAvatar1, backendPath: '/public/avatars/avatar1.png' },
+    { id: 2, image: defaultAvatar2, backendPath: '/public/avatars/avatar2.png' },
+    { id: 3, image: defaultAvatar3, backendPath: '/public/avatars/avatar3.png' }
   ];
 
   useEffect(() => {
