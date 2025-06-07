@@ -140,12 +140,16 @@ const UserProfile = () => {
 
   const handleSelectDefaultAvatar = async (avatar) => {
     try {
-      setAvatarPreview(avatar.image);
-      await saveAvatar(avatar.backendPath);
+      const savedUrl = await saveAvatar(avatar.backendPath);
+      if (savedUrl) {
+        setAvatarPreview(savedUrl);
+        setIsAvatarChanged(false);
+      }
     } catch (error) {
       alert(t.avatar_save_error);
     }
   };
+  
 
   const handleLogout = () => {
     localStorage.removeItem('token');
