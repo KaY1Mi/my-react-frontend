@@ -196,9 +196,20 @@ const UserProfile = () => {
 
               <div className="flex justify-center gap-4 mt-2">
                 {defaultAvatars.map((avatar) => (
-                  <div key={avatar.id} className={`w-14 h-14 rounded-full overflow-hidden cursor-pointer border-2 ${avatarPreview.includes(avatar.backendPath) ? 'border-blue-500' : 'border-gray-300'} hover:border-blue-400 transition-colors`} onClick={() => handleSelectDefaultAvatar(avatar)} title={`Аватар ${avatar.id}`}>
-                    <img src={avatar.image} alt={`Default avatar ${avatar.id}`} className="w-full h-full object-cover" />
-                  </div>
+                  <div 
+                  key={avatar.id}
+                  className={`w-14 h-14 rounded-full overflow-hidden cursor-pointer border-2 ${
+                    avatarPreview?.includes(avatar.backendPath) ? 'border-blue-500' : 'border-gray-300'
+                  } hover:border-blue-400 transition-colors`}
+                  onClick={() => handleSelectDefaultAvatar(avatar)}
+                  title={`Аватар ${avatar.id}`}
+                >
+                  <img 
+                    src={avatar.image} 
+                    alt={`Default avatar ${avatar.id}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 ))}
               </div>
 
