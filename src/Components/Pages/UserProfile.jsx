@@ -28,13 +28,14 @@ const UserProfile = () => {
     { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/avatar3.png' }
   ];
 
-  // Получаем полный URL аватара
+  // Функция для получения полного URL аватара
   const getFullAvatarUrl = (avatarPath) => {
     if (!avatarPath) return null;
     if (avatarPath.startsWith('http')) return avatarPath;
     return `https://my-django-backend-rrxo.onrender.com${avatarPath}`;
   };
 
+  // Загрузка данных пользователя
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
@@ -53,11 +54,11 @@ const UserProfile = () => {
         const data = await response.json();
         setUserData(data);
 
-        // Обрабатываем аватар
-        const avatarUrl = getFullAvatarUrl(data.avatar);
-        if (avatarUrl) {
-          setAvatarPreview(avatarUrl);
-          console.log('Avatar URL set:', avatarUrl); // Добавим лог для отладки
+        // Устанавливаем аватар из серверных данных
+        const serverAvatarUrl = getFullAvatarUrl(data.avatar);
+        if (serverAvatarUrl) {
+          setAvatarPreview(serverAvatarUrl);
+          localStorage.setItem('userAvatar', serverAvatarUrl);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -65,6 +66,13 @@ const UserProfile = () => {
       }
     };
 
+    // Сначала проверяем localStorage
+    const cachedAvatar = localStorage.getItem('userAvatar');
+    if (cachedAvatar) {
+      setAvatarPreview(cachedAvatar);
+    }
+
+    // Затем загружаем свежие данные с сервера
     fetchUserData();
   }, [navigate, language, t.profile_load_error]);
 
@@ -114,9 +122,10 @@ const UserProfile = () => {
       const data = await response.json();
       const avatarUrl = getFullAvatarUrl(data.avatar);
       
+      // Обновляем состояние и кэш
       setAvatarPreview(avatarUrl);
+      localStorage.setItem('userAvatar', avatarUrl);
       setIsAvatarChanged(false);
-      alert(t.changes_saved);
       
       return avatarUrl;
     } catch (error) {
@@ -133,6 +142,7 @@ const UserProfile = () => {
       formData.append('avatar', selectedFile);
       
       await saveAvatar(formData);
+      alert(t.changes_saved);
     } catch (error) {
       alert(t.avatar_upload_error);
     }
@@ -141,6 +151,7 @@ const UserProfile = () => {
   const handleSelectDefaultAvatar = async (avatar) => {
     try {
       await saveAvatar(avatar.backendPath);
+      alert(t.changes_saved);
     } catch (error) {
       alert(t.avatar_save_error);
     }
@@ -148,9 +159,9 @@ const UserProfile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userAvatar');
     navigate('/login');
   };
-
   return (
     <div className="overflow-hidden min-h-screen">
       <main className="min-h-screen">
@@ -183,7 +194,6 @@ const UserProfile = () => {
               language={language}
             />
           )}
-        
 
           {/* Профиль */}
           <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
@@ -198,18 +208,12 @@ const UserProfile = () => {
                       src={avatarPreview} 
                       alt="User avatar" 
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        console.error('Error loading avatar:', avatarPreview);
-                        e.target.src = defaultAvatar1; // Фолбэк аватар
-                      }}
                     />
                   ) : (
                     <div className="text-gray-400 text-lg">{t.no_avatar}</div>
                   )}
                 </div>
-                <div className="absolute bottom-2 right-2 w-[55px] h-[55px] bg-black rounded-full flex items-center justify-center">
-                  <img src={plus} alt="Add avatar" className="w-6 h-6" />
-                </div>
+               
                 <input
                   type="file"
                   ref={fileInputRef}
