@@ -2,7 +2,10 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import HeaderBlack from '../HeaderBlack';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
-import plus from '../../Image/svg/plus.svg'
+import plus from '../../Image/svg/plus.svg';
+import defaultAvatar1 from '../../Image/avatars/default1.png';
+import defaultAvatar2 from '../../Image/avatars/default2.png';
+import defaultAvatar3 from '../../Image/avatars/default3.png';
 import { useNavigate } from 'react-router-dom';
 import { translations } from '../translation';
 import { LanguageContext } from './LanguageContext';
@@ -19,12 +22,11 @@ const UserProfile = () => {
   const fileInputRef = useRef(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
 
-  // Массив стандартных аватарков
+  // Локальные стандартные аватарки
   const defaultAvatars = [
-    'https://my-django-backend-rrxo.onrender.com/media/avatars/иза.jpg',
-    'https://my-django-backend-rrxo.onrender.com/media/avatars/иза.jpg',
-    'https://my-django-backend-rrxo.onrender.com/media/avatars/иза.jpg',
-
+    { id: 1, image: defaultAvatar1, backendPath: '/media/avatars/default1.png' },
+    { id: 2, image: defaultAvatar2, backendPath: '/media/avatars/default2.png' },
+    { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/default3.png' }
   ];
 
   useEffect(() => {
@@ -37,10 +39,24 @@ const UserProfile = () => {
           headers: { 'Authorization': `Token ${token}` },
         });
 
-        if (!res.ok) throw new Error('Ошибка загрузки профиля');
+        if (!res.ok) throw new Error(t.profile_load_error);
         const data = await res.json();
         setUserData(data);
-        setAvatarPreview(data.avatar?.startsWith('http') ? data.avatar : `https://my-django-backend-rrxo.onrender.com${data.avatar}`);
+        
+        // Определяем, какой аватар установлен
+        const foundAvatar = defaultAvatars.find(
+          avatar => data.avatar?.includes(avatar.backendPath.split('/').pop())
+        );
+        
+        setAvatarPreview(
+          foundAvatar 
+            ? foundAvatar.image 
+            : data.avatar?.startsWith('http') 
+              ? data.avatar 
+              : data.avatar 
+                ? `https://my-django-backend-rrxo.onrender.com${data.avatar}`
+                : null
+        );
       } catch (err) {
         console.error(err);
         navigate('/login');
@@ -48,7 +64,7 @@ const UserProfile = () => {
     };
 
     fetchUser();
-  }, [navigate]);
+  }, [navigate, language]);
 
   const handleAvatarClick = () => {
     fileInputRef.current.click();
@@ -56,19 +72,21 @@ const UserProfile = () => {
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (!file.type.match('image.*')) {
-        alert(t.avatar_error_type);
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert(t.avatar_upload_error);
-        return;
-      }
-      setSelectedFile(file);
-      setAvatarPreview(URL.createObjectURL(file));
-      setIsAvatarChanged(true);
+    if (!file) return;
+
+    if (!file.type.match('image.*')) {
+      alert(t.avatar_error_type);
+      return;
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert(t.avatar_upload_error);
+      return;
+    }
+
+    setSelectedFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+    setIsAvatarChanged(true);
   };
 
   const handleSaveChanges = async () => {
@@ -87,19 +105,23 @@ const UserProfile = () => {
         body: formData,
       });
 
-      if (!res.ok) throw new Error('Ошибка при загрузке аватара');
+      if (!res.ok) throw new Error(t.avatar_upload_error);
 
       const data = await res.json();
-      setAvatarPreview(data.avatar);
+      setAvatarPreview(
+        data.avatar.startsWith('http') 
+          ? data.avatar 
+          : `https://my-django-backend-rrxo.onrender.com${data.avatar}`
+      );
       setIsAvatarChanged(false);
-      alert(t.changes_saved || 'Изменения сохранены');
+      alert(t.changes_saved);
     } catch (err) {
       console.error(err);
-      alert(t.avatar_upload_error || 'Ошибка загрузки аватара');
+      alert(t.avatar_upload_error);
     }
   };
 
-  const handleSelectDefaultAvatar = async (avatarUrl) => {
+  const handleSelectDefaultAvatar = async (avatar) => {
     const token = localStorage.getItem('token');
     if (!token) return navigate('/login');
 
@@ -110,18 +132,17 @@ const UserProfile = () => {
           'Authorization': `Token ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ avatar: avatarUrl }),
+        body: JSON.stringify({ avatar: avatar.backendPath }),
       });
 
-      if (!res.ok) throw new Error('Ошибка при сохранении аватара');
+      if (!res.ok) throw new Error(t.avatar_save_error);
 
-      const data = await res.json();
-      setAvatarPreview(data.avatar);
+      setAvatarPreview(avatar.image);
       setIsAvatarChanged(false);
-      alert(t.changes_saved || 'Изменения сохранены');
+      alert(t.changes_saved);
     } catch (err) {
       console.error(err);
-      alert(t.avatar_upload_error || 'Ошибка сохранения аватара');
+      alert(t.avatar_save_error);
     }
   };
 
@@ -193,17 +214,20 @@ const UserProfile = () => {
                 />
               </div>
 
-              {/* Блок с выбором стандартных аватарков */}
-              <div className="flex justify-center gap-4 mt-4">
-                {defaultAvatars.map((avatar, index) => (
+              {/* Стандартные аватарки */}
+              <div className="flex justify-center gap-4 mt-2">
+                {defaultAvatars.map((avatar) => (
                   <div 
-                    key={index} 
-                    className="w-16 h-16 rounded-full overflow-hidden cursor-pointer border-2 border-gray-300 hover:border-blue-500"
+                    key={avatar.id}
+                    className={`w-14 h-14 rounded-full overflow-hidden cursor-pointer border-2 ${
+                      avatarPreview === avatar.image ? 'border-blue-500' : 'border-gray-300'
+                    } hover:border-blue-400 transition-colors`}
                     onClick={() => handleSelectDefaultAvatar(avatar)}
+                    title={`Аватар ${avatar.id}`}
                   >
                     <img 
-                      src={avatar} 
-                      alt={`Default avatar ${index + 1}`}
+                      src={avatar.image} 
+                      alt={`Default avatar ${avatar.id}`}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -212,18 +236,20 @@ const UserProfile = () => {
 
               <div className="grid grid-cols-1 gap-4 w-full">
                 <h2 className="text-3xl font-bold font-bebas text-center">
-                  {userData.username || 'No username'}
+                  {userData.username || t.no_username}
                 </h2>
                 <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
                   <p className="font-bebas text-4xl">{t.email}:</p>
                   <p className="font-manrope text-base text-neutal-grey break-all text-right">
-                    {userData.email || 'No email'}
+                    {userData.email || t.no_email}
                   </p>
                 </div>
 
                 <button 
                   type="button" 
-                  className="bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4"
+                  className={`bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4 ${
+                    !isAvatarChanged ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                   onClick={handleSaveChanges}
                   disabled={!isAvatarChanged}
                 >
