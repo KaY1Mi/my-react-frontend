@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import HeaderBlack from '../HeaderBlack';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
@@ -28,16 +29,21 @@ const UserProfile = () => {
     { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/avatar3.png' }
   ];
 
-  // Функция для получения полного URL аватара
-  const getFullAvatarUrl = (avatarPath) => {
-    if (!avatarPath) return null;
-    if (avatarPath.startsWith('http')) return avatarPath;
-    return `https://my-django-backend-rrxo.onrender.com${avatarPath}`;
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
-  // Загрузка данных пользователя
   useEffect(() => {
-    const fetchUserData = async () => {
+    const loadAvatarFromCache = () => {
+      const cachedAvatar = localStorage.getItem('userAvatar');
+      if (cachedAvatar) {
+        setAvatarPreview(cachedAvatar);
+      }
+    };
+
+    const fetchUserProfile = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/login');
@@ -46,39 +52,35 @@ const UserProfile = () => {
 
       try {
         const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
-          headers: { 'Authorization': `Token ${token}` },
+          headers: { Authorization: `Token ${token}` },
         });
 
-        if (!response.ok) throw new Error(t.profile_load_error);
-
+        if (!response.ok) {
+          throw new Error(t.profile_load_error);
+        }
+        
         const data = await response.json();
         setUserData(data);
 
-        // Устанавливаем аватар из серверных данных
-        const serverAvatarUrl = getFullAvatarUrl(data.avatar);
-        if (serverAvatarUrl) {
-          setAvatarPreview(serverAvatarUrl);
-          localStorage.setItem('userAvatar', serverAvatarUrl);
+        const avatarUrl = data.avatar 
+          ? data.avatar.startsWith('http') 
+            ? data.avatar 
+            : `https://my-django-backend-rrxo.onrender.com${data.avatar}`
+          : null;
+
+        if (avatarUrl) {
+          setAvatarPreview(avatarUrl);
+          localStorage.setItem('userAvatar', avatarUrl);
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Profile load error:', error);
         navigate('/login');
       }
     };
 
-    // Сначала проверяем localStorage
-    const cachedAvatar = localStorage.getItem('userAvatar');
-    if (cachedAvatar) {
-      setAvatarPreview(cachedAvatar);
-    }
-
-    // Затем загружаем свежие данные с сервера
-    fetchUserData();
+    loadAvatarFromCache();
+    fetchUserProfile();
   }, [navigate, language, t.profile_load_error]);
-
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click();
-  };
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -99,7 +101,7 @@ const UserProfile = () => {
     setIsAvatarChanged(true);
   };
 
-  const saveAvatar = async (avatarData) => {
+  const saveAvatarToServer = async (avatarData) => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
@@ -107,29 +109,32 @@ const UserProfile = () => {
     }
 
     try {
-      const isFile = avatarData instanceof FormData;
+      const headers = {
+        Authorization: `Token ${token}`,
+      };
+
+      if (typeof avatarData !== 'object') {
+        headers['Content-Type'] = 'application/json';
+      }
+
       const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Token ${token}`,
-          ...(isFile ? {} : { 'Content-Type': 'application/json' })
-        },
-        body: isFile ? avatarData : JSON.stringify({ avatar: avatarData })
+        headers,
+        body: typeof avatarData === 'object' 
+          ? avatarData 
+          : JSON.stringify({ avatar: avatarData }),
       });
 
-      if (!response.ok) throw new Error(t.avatar_save_error);
+      if (!response.ok) {
+        throw new Error(t.avatar_save_error);
+      }
 
       const data = await response.json();
-      const avatarUrl = getFullAvatarUrl(data.avatar);
-      
-      // Обновляем состояние и кэш
-      setAvatarPreview(avatarUrl);
-      localStorage.setItem('userAvatar', avatarUrl);
-      setIsAvatarChanged(false);
-      
-      return avatarUrl;
+      return data.avatar.startsWith('http')
+        ? data.avatar
+        : `https://my-django-backend-rrxo.onrender.com${data.avatar}`;
     } catch (error) {
-      console.error('Error saving avatar:', error);
+      console.error('Avatar save error:', error);
       throw error;
     }
   };
@@ -141,7 +146,11 @@ const UserProfile = () => {
       const formData = new FormData();
       formData.append('avatar', selectedFile);
       
-      await saveAvatar(formData);
+      const avatarUrl = await saveAvatarToServer(formData);
+      
+      setAvatarPreview(avatarUrl);
+      localStorage.setItem('userAvatar', avatarUrl);
+      setIsAvatarChanged(false);
       alert(t.changes_saved);
     } catch (error) {
       alert(t.avatar_upload_error);
@@ -150,7 +159,11 @@ const UserProfile = () => {
 
   const handleSelectDefaultAvatar = async (avatar) => {
     try {
-      await saveAvatar(avatar.backendPath);
+      const avatarUrl = await saveAvatarToServer(avatar.backendPath);
+      
+      setAvatarPreview(avatar.image);
+      localStorage.setItem('userAvatar', avatarUrl);
+      setIsAvatarChanged(false);
       alert(t.changes_saved);
     } catch (error) {
       alert(t.avatar_save_error);
@@ -162,6 +175,8 @@ const UserProfile = () => {
     localStorage.removeItem('userAvatar');
     navigate('/login');
   };
+
+
   return (
     <div className="overflow-hidden min-h-screen">
       <main className="min-h-screen">
@@ -213,7 +228,9 @@ const UserProfile = () => {
                     <div className="text-gray-400 text-lg">{t.no_avatar}</div>
                   )}
                 </div>
-               
+                <div className="absolute bottom-2 right-2 w-[55px] h-[55px] bg-black rounded-full flex items-center justify-center">
+                  <img src={plus} alt="Add avatar" className="w-6 h-6" />
+                </div>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -254,6 +271,16 @@ const UserProfile = () => {
                   </p>
                 </div>
 
+                <button 
+                  type="button" 
+                  className={`bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4 ${
+                    !isAvatarChanged ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  onClick={handleSaveChanges}
+                  disabled={!isAvatarChanged}
+                >
+                  {t.btn_save}
+                </button>
               </div>
             </div>
           </div>
