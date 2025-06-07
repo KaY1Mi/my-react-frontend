@@ -1,106 +1,176 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import HeaderBlack from '../HeaderBlack';
+import { translations } from '../Pages/translation';
+import { useNavigate } from 'react-router-dom';
+import plus from '../../Image/svg/plus.svg';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
-import plus from '../../Image/svg/plus.svg'
-import { useNavigate } from 'react-router-dom';
-import { translations } from '../translation';
-import { LanguageContext } from './LanguageContext';
-import './index.css'
+
 const UserProfile = () => {
-  const { language, setLanguage } = useContext(LanguageContext);
-  const t = translations[language];
+  const [language, setLanguage] = useState('ru');
+  const t = translations[language];  
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [userData, setUserData] = useState({});
+  // Для аватара
   const [avatarPreview, setAvatarPreview] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const fileInputRef = useRef(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
+  const fileInputRef = useRef(null);
 
+  // Получаем данные пользователя
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return navigate('/login');
-
+    const fetchUserData = async () => {
       try {
-        const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
-          headers: { 'Authorization': `Token ${token}` },
-        });
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
 
-        if (!res.ok) throw new Error('Ошибка загрузки профиля');
-        const data = await res.json();
+        const response = await fetch('http://127.0.0.1:8000/api/user/profile/', {
+          headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            navigate('/login');
+          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('User data:', data); // Для отладки
+        
         setUserData(data);
-        setAvatarPreview(data.avatar?.startsWith('http') ? data.avatar : `https://my-django-backend-rrxo.onrender.com${data.avatar}`);
-      } catch (err) {
-        console.error(err);
+        
+        // Обработка аватара
+        if (data.avatar) {
+          // Проверяем, содержит ли URL уже домен
+          const avatarUrl = data.avatar.startsWith('http') ? 
+            data.avatar : 
+            `http://localhost:8000${data.avatar}`;
+          setAvatarPreview(avatarUrl);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setError(error.message);
         navigate('/login');
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchUser();
+    
+    fetchUserData();
   }, [navigate]);
 
-  const handleAvatarClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.match('image.*')) {
-        alert(t.avatar_error_type);
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        alert(t.avatar_upload_error);
-        return;
-      }
-      setSelectedFile(file);
-      setAvatarPreview(URL.createObjectURL(file));
-      setIsAvatarChanged(true);
-    }
-  };
-
+  // Сохранение изменений аватара
   const handleSaveChanges = async () => {
-    if (!selectedFile) return;
-
-    const token = localStorage.getItem('token');
-    if (!token) return navigate('/login');
-
-    const formData = new FormData();
-    formData.append('avatar', selectedFile);
+    if (!isAvatarChanged || !fileInputRef.current?.files[0]) {
+      alert(t.no_changes);
+      return;
+    }
 
     try {
-      const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('avatar', fileInputRef.current.files[0]);
+
+      const response = await fetch('http://127.0.0.1:8000/upload-avatar/', {
         method: 'PATCH',
-        headers: { 'Authorization': `Token ${token}` },
+        headers: {
+          'Authorization': `Token ${token}`,
+        },
         body: formData,
       });
 
-      if (!res.ok) throw new Error('Ошибка при загрузке аватара');
+      if (!response.ok) {
+        throw new Error(t.avatar_upload_error);
+      }
 
-      const data = await res.json();
-      setAvatarPreview(data.avatar);
+      const data = await response.json();
+      console.log('Avatar updated:', data);
+      
+      // Обновляем превью аватара
+      if (data.avatar) {
+        const avatarUrl = data.avatar.startsWith('http') ? 
+          data.avatar : 
+          `http://localhost:8000${data.avatar}`;
+        setAvatarPreview(avatarUrl);
+      }
+      
+      alert(t.changes_saved);
       setIsAvatarChanged(false);
-      alert(t.changes_saved || 'Изменения сохранены');
+      
+      // Обновляем данные пользователя
+      setUserData(prev => ({...prev, avatar: data.avatar}));
     } catch (err) {
-      console.error(err);
-      alert(t.avatar_upload_error || 'Ошибка загрузки аватара');
+      console.error('Error:', err);
+      alert(err.message || t.avatar_upload_error);
     }
+  };
+
+  // Остальные обработчики остаются без изменений
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.match('image.*')) {
+      alert(t.avatar_error_type);
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      alert(t.avatar_upload_error);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result);
+      setIsAvatarChanged(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    setShowLogoutModal(false);
     navigate('/login');
   };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
+  }
+
+  if (!userData) {
+    return <div className="flex justify-center items-center h-screen">No user data available</div>;
+  }
 
   return (
     <div className="overflow-hidden min-h-screen">
       <main className="min-h-screen">
         <HeaderBlack language={language} setLanguage={setLanguage} />
-
+        
         <section className="grid grid-cols-2 py-5 gap-5 md:grid-cols-4 md:gap-5 lg:grid-cols-4 xl:grid-cols-10">
           {/* Меню */}
           <div className="col-span-full xl:col-span-4">
@@ -109,11 +179,13 @@ const UserProfile = () => {
               className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
               {t.link_userprofile}  
             </button>
+
             <button 
               onClick={() => navigate("/likecourses")}
               className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
               {t.link_linkcourses}  
             </button>
+
             <button
               onClick={() => setShowLogoutModal(true)} 
               className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
@@ -128,10 +200,11 @@ const UserProfile = () => {
               language={language}
             />
           )}
-
+          
           {/* Профиль */}
           <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
             <div className="grid grid-cols-1 gap-5">
+              {/* Область аватара */}
               <div 
                 className="relative w-[250px] h-[250px] justify-self-center cursor-pointer group xl:justify-self-start"
                 onClick={handleAvatarClick}
@@ -147,9 +220,11 @@ const UserProfile = () => {
                     <div className="text-gray-400 text-lg">{t.no_avatar}</div>
                   )}
                 </div>
+                
                 <div className="absolute bottom-2 right-2 w-[55px] h-[55px] bg-black rounded-full flex items-center justify-center">
                   <img src={plus} alt="Add avatar" className="w-6 h-6" />
                 </div>
+                
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -158,18 +233,20 @@ const UserProfile = () => {
                   className="hidden"
                 />
               </div>
-
+              
+              {/* Информация о пользователе */}
               <div className="grid grid-cols-1 gap-4 w-full">
                 <h2 className="text-3xl font-bold font-bebas text-center">
                   {userData.username || 'No username'}
                 </h2>
+                
                 <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
                   <p className="font-bebas text-4xl">{t.email}:</p>
                   <p className="font-manrope text-base text-neutal-grey break-all text-right">
                     {userData.email || 'No email'}
                   </p>
                 </div>
-
+                
                 <button 
                   type="button" 
                   className="bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4"
