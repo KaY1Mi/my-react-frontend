@@ -126,27 +126,29 @@ const UserProfile = () => {
   };
 
   const handleSaveChanges = async () => {
-    if (!selectedFile) return;
-
+    if (!isAvatarChanged) return;
+  
     try {
-      const formData = new FormData();
-      formData.append('avatar', selectedFile);
-      await saveAvatar(formData);
+      if (selectedFile) {
+        // Загружаем файл
+        const formData = new FormData();
+        formData.append('avatar', selectedFile);
+        await saveAvatar(formData);
+      } else if (avatarPreview) {
+        // Отправляем путь к дефолтному аватару
+        const selected = defaultAvatars.find((a) => avatarPreview.includes(a.backendPath));
+        if (selected) {
+          await saveAvatar(selected.backendPath);
+        }
+      }
     } catch (error) {
       alert(t.avatar_upload_error);
     }
   };
-
-  const handleSelectDefaultAvatar = async (avatar) => {
-    try {
-      const savedUrl = await saveAvatar(avatar.backendPath);
-      if (savedUrl) {
-        setAvatarPreview(savedUrl);
-        setIsAvatarChanged(false);
-      }
-    } catch (error) {
-      alert(t.avatar_save_error);
-    }
+  const handleSelectDefaultAvatar = (avatar) => {
+    setSelectedFile(null); // Очистим файл, т.к. теперь выбираем дефолтный
+    setAvatarPreview(avatar.image);
+    setIsAvatarChanged(true);
   };
   
 
