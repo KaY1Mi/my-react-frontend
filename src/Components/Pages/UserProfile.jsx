@@ -96,14 +96,14 @@ const UserProfile = () => {
     try {
       setLoading(true);
       const isFile = avatarData instanceof FormData;
-      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Token ${token}`,
-          ...(isFile ? {} : { 'Content-Type': 'application/json' })
-        },
-        body: isFile ? avatarData : JSON.stringify({ avatar: avatarData })
-      });
+const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': `Token ${token}`,
+    ...(isFile ? {} : { 'Content-Type': 'application/json' })  // Убедись, что этот заголовок добавлен
+  },
+  body: isFile ? avatarData : JSON.stringify({ avatar: avatarData })
+});
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -145,10 +145,14 @@ const UserProfile = () => {
       alert(t.avatar_upload_error);
     }
   };
-  const handleSelectDefaultAvatar = (avatar) => {
-    setSelectedFile(null); // Очистим файл, т.к. теперь выбираем дефолтный
-    setAvatarPreview(avatar.image);
-    setIsAvatarChanged(true);
+  const handleSelectDefaultAvatar = async (avatar) => {
+    try {
+      await saveAvatar(avatar.backendPath);
+      setAvatarPreview(avatar.image);  // обновляем превью на локальное изображение
+      setIsAvatarChanged(false);
+    } catch (error) {
+      alert(t.avatar_save_error);
+    }
   };
   
 
