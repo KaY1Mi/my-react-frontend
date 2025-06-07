@@ -3,7 +3,7 @@ import HeaderBlack from '../HeaderBlack';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import plus from '../../Image/svg/plus.svg';
-import defaultAvatar1 from '../../Image/webp/avatar1.png'
+import defaultAvatar1 from '../../Image/webp/avatar1.png';
 import defaultAvatar2 from '../../Image/webp/avatar2.png';
 import defaultAvatar3 from '../../Image/webp/avatar3.png';
 import { useNavigate } from 'react-router-dom';
@@ -22,53 +22,53 @@ const UserProfile = () => {
   const fileInputRef = useRef(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
 
-  // Локальные стандартные аватарки
   const defaultAvatars = [
-    { id: 1, image: defaultAvatar1, backendPath: '/media/avatars/default1.png' },
-    { id: 2, image: defaultAvatar2, backendPath: '/media/avatars/default2.png' },
-    { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/default3.png' }
+    { id: 1, image: defaultAvatar1, backendPath: '/media/avatars/avatar1.png' },
+    { id: 2, image: defaultAvatar2, backendPath: '/media/avatars/avatar2.png' },
+    { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/avatar3.png' }
   ];
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const loadAvatarFromCache = () => {
+      const cachedAvatar = localStorage.getItem('userAvatar');
+      if (cachedAvatar) {
+        setAvatarPreview(cachedAvatar);
+      }
+    };
+
+    const fetchUserProfile = async () => {
       const token = localStorage.getItem('token');
       if (!token) return navigate('/login');
 
       try {
-        const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
+        const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
           headers: { 'Authorization': `Token ${token}` },
         });
 
-        if (!res.ok) throw new Error(t.profile_load_error);
-        const data = await res.json();
+        if (!response.ok) throw new Error(t.profile_load_error);
+        
+        const data = await response.json();
         setUserData(data);
-        
-        // Определяем, какой аватар установлен
-        const foundAvatar = defaultAvatars.find(
-          avatar => data.avatar?.includes(avatar.backendPath.split('/').pop())
-        );
-        
-        setAvatarPreview(
-          foundAvatar 
-            ? foundAvatar.image 
-            : data.avatar?.startsWith('http') 
-              ? data.avatar 
-              : data.avatar 
-                ? `https://my-django-backend-rrxo.onrender.com${data.avatar}`
-                : null
-        );
-      } catch (err) {
-        console.error(err);
+
+        const avatarUrl = data.avatar 
+          ? data.avatar.startsWith('http') 
+            ? data.avatar 
+            : `https://my-django-backend-rrxo.onrender.com${data.avatar}`
+          : null;
+
+        if (avatarUrl) {
+          setAvatarPreview(avatarUrl);
+          localStorage.setItem('userAvatar', avatarUrl);
+        }
+      } catch (error) {
+        console.error('Profile load error:', error);
         navigate('/login');
       }
     };
 
-    fetchUser();
-  }, [navigate, language]);
-
-  const handleAvatarClick = () => {
-    fileInputRef.current.click();
-  };
+    loadAvatarFromCache();
+    fetchUserProfile();
+  }, [navigate, language, t.profile_load_error]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -89,65 +89,72 @@ const UserProfile = () => {
     setIsAvatarChanged(true);
   };
 
-  const handleSaveChanges = async () => {
-    if (!selectedFile) return;
-
+  const saveAvatarToServer = async (avatarData) => {
     const token = localStorage.getItem('token');
     if (!token) return navigate('/login');
 
-    const formData = new FormData();
-    formData.append('avatar', selectedFile);
-
     try {
-      const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
+      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
         method: 'PATCH',
-        headers: { 'Authorization': `Token ${token}` },
-        body: formData,
+        headers: {
+          'Authorization': `Token ${token}`,
+          ...(typeof avatarData === 'object' 
+            ? {} 
+            : { 'Content-Type': 'application/json' })
+        },
+        body: typeof avatarData === 'object' 
+          ? avatarData 
+          : JSON.stringify({ avatar: avatarData })
       });
 
-      if (!res.ok) throw new Error(t.avatar_upload_error);
+      if (!response.ok) throw new Error(t.avatar_save_error);
 
-      const data = await res.json();
-      setAvatarPreview(
-        data.avatar.startsWith('http') 
-          ? data.avatar 
-          : `https://my-django-backend-rrxo.onrender.com${data.avatar}`
-      );
+      const data = await response.json();
+      const avatarUrl = data.avatar.startsWith('http')
+        ? data.avatar
+        : `https://my-django-backend-rrxo.onrender.com${data.avatar}`;
+
+      return avatarUrl;
+    } catch (error) {
+      console.error('Avatar save error:', error);
+      throw error;
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!selectedFile) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('avatar', selectedFile);
+      
+      const avatarUrl = await saveAvatarToServer(formData);
+      
+      setAvatarPreview(avatarUrl);
+      localStorage.setItem('userAvatar', avatarUrl);
       setIsAvatarChanged(false);
       alert(t.changes_saved);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
       alert(t.avatar_upload_error);
     }
   };
 
   const handleSelectDefaultAvatar = async (avatar) => {
-    const token = localStorage.getItem('token');
-    if (!token) return navigate('/login');
-
     try {
-      const res = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
-        method: 'PATCH',
-        headers: { 
-          'Authorization': `Token ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ avatar: avatar.backendPath }),
-      });
-
-      if (!res.ok) throw new Error(t.avatar_save_error);
-
+      const avatarUrl = await saveAvatarToServer(avatar.backendPath);
+      
       setAvatarPreview(avatar.image);
+      localStorage.setItem('userAvatar', avatarUrl);
       setIsAvatarChanged(false);
       alert(t.changes_saved);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
       alert(t.avatar_save_error);
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userAvatar');
     navigate('/login');
   };
 
