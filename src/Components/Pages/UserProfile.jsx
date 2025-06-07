@@ -21,6 +21,7 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const defaultAvatars = [
     { id: 1, image: defaultAvatar1, backendPath: '/media/avatars/avatar1.png' },
@@ -28,7 +29,6 @@ const UserProfile = () => {
     { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/avatar3.png' }
   ];
 
-  // Получаем полный URL аватара
   const getFullAvatarUrl = (avatarPath) => {
     if (!avatarPath) return null;
     if (avatarPath.startsWith('http')) return avatarPath;
@@ -53,14 +53,8 @@ const UserProfile = () => {
         const data = await response.json();
         setUserData(data);
 
-        // Устанавливаем аватар из серверных данных
         const avatarUrl = getFullAvatarUrl(data.avatar);
-        if (avatarUrl) {
-          setAvatarPreview(avatarUrl);
-          console.log('Avatar URL loaded from server:', avatarUrl); // Логируем URL
-        } else {
-          console.log('No avatar URL received from server');
-        }
+        if (avatarUrl) setAvatarPreview(avatarUrl);
       } catch (error) {
         console.error('Error fetching user data:', error);
         navigate('/login');
@@ -101,6 +95,7 @@ const UserProfile = () => {
     }
 
     try {
+      setLoading(true);
       const isFile = avatarData instanceof FormData;
       const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
         method: 'PATCH',
@@ -119,16 +114,15 @@ const UserProfile = () => {
 
       const data = await response.json();
       const avatarUrl = getFullAvatarUrl(data.avatar);
-      
-      // Обновляем состояние
       setAvatarPreview(avatarUrl);
       setIsAvatarChanged(false);
       alert(t.changes_saved);
-      
       return avatarUrl;
     } catch (error) {
       console.error('Error saving avatar:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,7 +132,6 @@ const UserProfile = () => {
     try {
       const formData = new FormData();
       formData.append('avatar', selectedFile);
-      
       await saveAvatar(formData);
     } catch (error) {
       alert(t.avatar_upload_error);
@@ -147,6 +140,7 @@ const UserProfile = () => {
 
   const handleSelectDefaultAvatar = async (avatar) => {
     try {
+      setAvatarPreview(avatar.image);
       await saveAvatar(avatar.backendPath);
     } catch (error) {
       alert(t.avatar_save_error);
@@ -158,60 +152,38 @@ const UserProfile = () => {
     navigate('/login');
   };
 
-
-
   return (
     <div className="overflow-hidden min-h-screen">
       <main className="min-h-screen">
         <HeaderBlack language={language} setLanguage={setLanguage} />
 
         <section className="grid grid-cols-2 py-5 gap-5 md:grid-cols-4 md:gap-5 lg:grid-cols-4 xl:grid-cols-10">
-          {/* Меню */}
           <div className="col-span-full xl:col-span-4">
-            <button 
-              onClick={() => navigate("/profile")}
-              className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
+            <button onClick={() => navigate("/profile")} className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
               {t.link_userprofile}  
             </button>
-            <button 
-              onClick={() => navigate("/likecourses")}
-              className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
+            <button onClick={() => navigate("/likecourses")} className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
               {t.link_linkcourses}  
             </button>
-            <button
-              onClick={() => setShowLogoutModal(true)} 
-              className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
+            <button onClick={() => setShowLogoutModal(true)} className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
               {t.link_logout}  
             </button>
           </div>
 
           {showLogoutModal && (
-            <LogoutModal 
-              onClose={() => setShowLogoutModal(false)}
-              onConfirm={handleLogout}
-              language={language}
-            />
+            <LogoutModal onClose={() => setShowLogoutModal(false)} onConfirm={handleLogout} language={language} />
           )}
 
-         {/* Профиль */}
-         <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
+          <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
             <div className="grid grid-cols-1 gap-5">
-              <div 
-                className="relative w-[250px] h-[250px] justify-self-center cursor-pointer group xl:justify-self-start"
-                onClick={handleAvatarClick}
-              >
+              <div className="relative w-[250px] h-[250px] justify-self-center cursor-pointer group xl:justify-self-start" onClick={handleAvatarClick}>
                 <div className="w-full h-full rounded-full bg-gray-200 overflow-hidden flex items-center justify-center border-2 border-gray-300">
                   {avatarPreview ? (
-                    <img 
-                      src={avatarPreview} 
-                      alt="User avatar" 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        console.error('Error loading avatar:', avatarPreview);
-                        e.target.onerror = null;
-                        e.target.src = defaultAvatar1;
-                      }}
-                    />
+                    <img src={avatarPreview} alt="User avatar" className="w-full h-full object-cover" onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = defaultAvatar1;
+                      setAvatarPreview(defaultAvatar1);
+                    }} />
                   ) : (
                     <div className="text-gray-400 text-lg">{t.no_avatar}</div>
                   )}
@@ -219,31 +191,13 @@ const UserProfile = () => {
                 <div className="absolute bottom-2 right-2 w-[55px] h-[55px] bg-black rounded-full flex items-center justify-center">
                   <img src={plus} alt="Add avatar" className="w-6 h-6" />
                 </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleAvatarChange}
-                  accept="image/*"
-                  className="hidden"
-                />
+                <input type="file" ref={fileInputRef} onChange={handleAvatarChange} accept="image/*" className="hidden" />
               </div>
 
-              {/* Стандартные аватарки */}
               <div className="flex justify-center gap-4 mt-2">
                 {defaultAvatars.map((avatar) => (
-                  <div 
-                    key={avatar.id}
-                    className={`w-14 h-14 rounded-full overflow-hidden cursor-pointer border-2 ${
-                      avatarPreview === avatar.image ? 'border-blue-500' : 'border-gray-300'
-                    } hover:border-blue-400 transition-colors`}
-                    onClick={() => handleSelectDefaultAvatar(avatar)}
-                    title={`Аватар ${avatar.id}`}
-                  >
-                    <img 
-                      src={avatar.image} 
-                      alt={`Default avatar ${avatar.id}`}
-                      className="w-full h-full object-cover"
-                    />
+                  <div key={avatar.id} className={`w-14 h-14 rounded-full overflow-hidden cursor-pointer border-2 ${avatarPreview.includes(avatar.backendPath) ? 'border-blue-500' : 'border-gray-300'} hover:border-blue-400 transition-colors`} onClick={() => handleSelectDefaultAvatar(avatar)} title={`Аватар ${avatar.id}`}>
+                    <img src={avatar.image} alt={`Default avatar ${avatar.id}`} className="w-full h-full object-cover" />
                   </div>
                 ))}
               </div>
@@ -259,15 +213,8 @@ const UserProfile = () => {
                   </p>
                 </div>
 
-                <button 
-                  type="button" 
-                  className={`bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4 ${
-                    !isAvatarChanged ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                  onClick={handleSaveChanges}
-                  disabled={!isAvatarChanged}
-                >
-                  {t.btn_save}
+                <button type="button" className={`bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4 ${!isAvatarChanged ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleSaveChanges} disabled={!isAvatarChanged || loading}>
+                  {loading ? t.saving : t.btn_save}
                 </button>
               </div>
             </div>
