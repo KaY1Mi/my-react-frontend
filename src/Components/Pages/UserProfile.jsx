@@ -3,9 +3,9 @@ import HeaderBlack from '../HeaderBlack';
 import Footer from '../Footer';
 import LogoutModal from '../LogoutModal';
 import plus from '../../Image/svg/plus.svg';
-import defaultAvatar1 from '../../Image/webp/avatar1'
-import defaultAvatar2 from '../../Image/webp/avatar2';
-import defaultAvatar3 from '../../Image/webp/avatar3';
+import defaultAvatar1 from '../../Image/webp/avatar1.png'
+import defaultAvatar2 from '../../Image/webp/avatar2.png';
+import defaultAvatar3 from '../../Image/webp/avatar3.png';
 import { useNavigate } from 'react-router-dom';
 import { translations } from '../translation';
 import { LanguageContext } from './LanguageContext';
