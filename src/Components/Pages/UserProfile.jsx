@@ -6,7 +6,7 @@ import plus from '../../Image/svg/plus.svg'
 import { useNavigate } from 'react-router-dom';
 import { translations } from '../translation';
 import { LanguageContext } from './LanguageContext';
-import './index.css'
+
 const UserProfile = () => {
   const { language, setLanguage } = useContext(LanguageContext);
   const t = translations[language];
