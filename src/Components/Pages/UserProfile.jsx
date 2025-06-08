@@ -100,7 +100,10 @@ const UserProfile = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
-
+  const handleEditField = (field) => {
+    setIsEditing((prev) => ({ ...prev, [field]: true }));
+    setFormData((prev) => ({ ...prev, [field]: '' }));
+  };
   return (
     <div className="overflow-hidden min-h-screen">
       <main className="min-h-screen">
@@ -135,68 +138,73 @@ const UserProfile = () => {
           <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
             <div className="grid grid-cols-1 gap-5">
               <div className="grid grid-cols-1 gap-4 w-full">
-                <h2 className="text-3xl font-bold font-bebas text-center relative">
-                  <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    readOnly={!isEditing.username}
-                    className={`w-full text-center bg-transparent border-b border-gray-300 focus:outline-none ${
-                      !isEditing.username ? 'text-gray-400 cursor-default' : ''
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing((prev) => ({ ...prev, username: true }))}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-blue-600 text-sm"
-                  >
-                    ✏️ {t.edit || 'Edit'}
-                  </button>
-                </h2>
+              <h2 className="text-3xl font-bold font-bebas text-center relative">
+  <input
+    type="text"
+    name="username"
+    value={formData.username}
+    onChange={handleChange}
+    readOnly={!isEditing.username}
+    className={`w-full text-center bg-transparent border-b border-gray-300 focus:outline-none ${
+      !isEditing.username ? 'text-black cursor-default' : ''
+    }`}
+  />
+  {!isEditing.username && (
+    <button
+      type="button"
+      onClick={() => handleEditField('username')}
+      className="absolute right-0 top-1/2 -translate-y-1/2 text-blue-600 text-sm"
+    >
+      ✏️ {t.edit || 'Edit'}
+    </button>
+  )}
+</h2>
+<div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2">
+  <label className="font-bebas text-4xl">{t.email}:</label>
+  <input
+    type="email"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    readOnly={!isEditing.email}
+    className={`font-manrope text-base text-black break-all text-right border-b border-gray-300 focus:outline-none ${
+      !isEditing.email ? 'cursor-default' : ''
+    }`}
+  />
+  {!isEditing.email && (
+    <button
+      type="button"
+      onClick={() => handleEditField('email')}
+      className="text-blue-600 text-sm"
+    >
+      ✏️ {t.edit || 'Edit'}
+    </button>
+  )}
+</div>
 
-                <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2">
-                  <label className="font-bebas text-4xl">{t.email}:</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    readOnly={!isEditing.email}
-                    className={`font-manrope text-base text-neutal-grey break-all text-right border-b border-gray-300 focus:outline-none ${
-                      !isEditing.email ? 'text-gray-400 cursor-default' : ''
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing((prev) => ({ ...prev, email: true }))}
-                    className="text-blue-600 text-sm"
-                  >
-                    ✏️ {t.edit || 'Edit'}
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2">
-                  <label className="font-bebas text-4xl">{t.password || 'Password'}:</label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    readOnly={!isEditing.password}
-                    placeholder="••••••••"
-                    className={`font-manrope text-base text-neutal-grey break-all text-right border-b border-gray-300 focus:outline-none ${
-                      !isEditing.password ? 'text-gray-400 cursor-default' : ''
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing((prev) => ({ ...prev, password: true }))}
-                    className="text-blue-600 text-sm"
-                  >
-                    ✏️ {t.edit || 'Edit'}
-                  </button>
-                </div>
+<div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2">
+  <label className="font-bebas text-4xl">{t.password || 'Password'}:</label>
+  <input
+    type="password"
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+    readOnly={!isEditing.password}
+    placeholder="••••••••"
+    className={`font-manrope text-base text-black break-all text-right border-b border-gray-300 focus:outline-none ${
+      !isEditing.password ? 'cursor-default' : ''
+    }`}
+  />
+  {!isEditing.password && (
+    <button
+      type="button"
+      onClick={() => handleEditField('password')}
+      className="text-blue-600 text-sm"
+    >
+      ✏️ {t.edit || 'Edit'}
+    </button>
+  )}
+</div>
 
                 <button
                   type="button"
