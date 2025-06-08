@@ -128,24 +128,48 @@ const handleSave = async () => {
           <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
             <div className="grid grid-cols-1 gap-5">
               <div className="grid grid-cols-1 gap-4 w-full">
-                <h2 className="text-3xl font-bold font-bebas text-center">
-                  {userData.username || t.no_username}
-                </h2>
-                <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
-                  <p className="font-bebas text-4xl">{t.email}:</p>
-                  <p className="font-manrope text-base text-neutal-grey break-all text-right">
-                    {userData.email || t.no_email}
-                  </p>
-                </div>
+              <h2 className="text-3xl font-bold font-bebas text-center">
+  <input
+    type="text"
+    name="username"
+    value={formData.username}
+    onChange={handleChange}
+    className="w-full text-center bg-transparent border-b border-gray-300 focus:outline-none"
+  />
+</h2>
 
-                {/* Пример будущей кнопки "Сохранить", если добавишь редактирование */}
-                <button
-                  type="button"
-                  className="bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4 opacity-50 cursor-not-allowed"
-                  disabled
-                >
-                  {loading ? t.saving : t.btn_save}
-                </button>
+<div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
+  <label className="font-bebas text-4xl">{t.email}:</label>
+  <input
+    type="email"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    className="font-manrope text-base text-neutal-grey break-all text-right border-b border-gray-300 focus:outline-none"
+  />
+</div>
+
+<div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
+  <label className="font-bebas text-4xl">{t.password || 'Password'}:</label>
+  <input
+    type="password"
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+    className="font-manrope text-base text-neutal-grey break-all text-right border-b border-gray-300 focus:outline-none"
+  />
+</div>
+
+{successMessage && <p className="text-green-600">{successMessage}</p>}
+{errorMessage && <p className="text-red-600">{errorMessage}</p>}
+
+<button
+  type="button"
+  onClick={handleSave}
+  className="bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4"
+>
+  {loading ? t.saving : t.btn_save}
+</button>
               </div>
             </div>
           </div>
