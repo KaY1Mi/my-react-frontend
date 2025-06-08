@@ -191,6 +191,15 @@ const handleSave = async () => {
     ✏️ {t.edit || 'Edit'}
   </button>
 </div>
+<button
+  type="button"
+  onClick={handleSave}
+  className="bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4"
+>
+  {loading ? t.saving : t.btn_save}
+</button>
+{successMessage && <p className="text-green-600">{successMessage}</p>}
+{errorMessage && <p className="text-red-600">{errorMessage}</p>}
               </div>
             </div>
           </div>
