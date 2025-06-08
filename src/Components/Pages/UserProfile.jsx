@@ -14,6 +14,67 @@ const UserProfile = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+const [successMessage, setSuccessMessage] = useState('');
+const [errorMessage, setErrorMessage] = useState('');
+
+useEffect(() => {
+  const fetchUserData = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return navigate('/login');
+
+    try {
+      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
+        headers: { 'Authorization': `Token ${token}` },
+      });
+
+      if (!response.ok) throw new Error(t.profile_load_error);
+      const data = await response.json();
+      setUserData(data);
+      setFormData({ username: data.username, email: data.email, password: '' });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      navigate('/login');
+    }
+  };
+
+  fetchUserData();
+}, [navigate, language, t.profile_load_error]);
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData({ ...formData, [name]: value });
+};
+
+const handleSave = async () => {
+  setLoading(true);
+  setSuccessMessage('');
+  setErrorMessage('');
+
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/update/', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      setSuccessMessage(t.profile_updated_successfully);
+      setFormData({ ...formData, password: '' }); // очищаем пароль
+    } else {
+      setErrorMessage(data?.message || t.profile_update_error);
+    }
+  } catch (error) {
+    setErrorMessage(t.profile_update_error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     const fetchUserData = async () => {
