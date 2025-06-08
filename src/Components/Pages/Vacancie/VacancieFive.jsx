@@ -6,8 +6,8 @@ import { useContext } from 'react';
 
 import { LanguageContext } from '../LanguageContext';
 // импорт изображений
-import img1 from '../../../Image/webp/Vacancie/img1.webp'
-import img2 from '../../../Image/webp/Vacancie/img2.jpg'
+import img1 from '../../../Image/webp/Vacancie/japanhouse.jpg'
+import img2 from '../../../Image/webp/Vacancie/app/jpg'
 import img3 from '../../../Image/webp/Vacancie/img3.jpg'
 import PopupVacancie from '../../PopupVacancie';
 

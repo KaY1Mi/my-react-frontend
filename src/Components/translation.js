@@ -1752,7 +1752,7 @@ article_typo1_p_five_two: "If you find the right balance between these colors in
       h4_price_one_five:"2200$ за месяц",
       h5_text_one_five:"В компанию IT VDK требуются дизайнеры интерфейсов, знаниями уровня junior",
       h2_vac_one2: "IT Squad",
-        h3_vac_one2: "Присоединяйтесь к нашей творческой команде",
+        h3_vac_one2: "Присоединяйтесь к нашей творческой команде, мы создаем веб-продукы для бизнеса из NA, мы ищем ux/ui дизайнера уровня junior",
         h2_vac_vac2: "ВАКАНСИЯ",
         h4_vac_name2: "UX/UI дизайнер",
         h3_vac_price2: "ЗАРПЛАТА 10.000 $",
