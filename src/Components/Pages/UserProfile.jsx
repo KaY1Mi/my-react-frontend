@@ -51,14 +51,20 @@ const UserProfile = () => {
     setLoading(true);
     setSuccessMessage('');
     setErrorMessage('');
-
+  
     const token = localStorage.getItem('token');
     if (!token) {
       setErrorMessage(t.profile_update_error);
       setLoading(false);
       return;
     }
-
+  
+    // Prepare data to send - exclude empty password
+    const updateData = { username: formData.username, email: formData.email };
+    if (formData.password.trim() !== '') {
+      updateData.password = formData.password;
+    }
+  
     try {
       const response = await fetch('https://my-django-backend-rrxo.onrender.com/user/profile/update/', {
         method: 'PATCH',
@@ -66,17 +72,17 @@ const UserProfile = () => {
           'Content-Type': 'application/json',
           Authorization: `Token ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updateData),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         setSuccessMessage(t.profile_updated_successfully);
         setUserData((prev) => ({
           ...prev,
-          username: formData.username,
-          email: formData.email,
+          username: updateData.username,
+          email: updateData.email,
         }));
         setFormData((prev) => ({ ...prev, password: '' }));
         setIsEditing({ username: false, email: false, password: false });
