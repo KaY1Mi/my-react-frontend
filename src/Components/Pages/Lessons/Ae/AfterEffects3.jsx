@@ -101,7 +101,7 @@ const AfterEffectsLesson3 = () => {
                         <p className="font-manrope mb-6">{t.ae_course_complete_message}</p>
                         <div className="flex justify-between">
                             <a 
-                                href="https://t.me/yourchannel" 
+                                href="https://web.telegram.org/k/#-2367128985" 
                                 target="_blank" 
                                 rel="noopener noreferrer"
                                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"

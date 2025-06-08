@@ -13,7 +13,7 @@ export const translations = {
     fifth_stat:"Students successfully complete their studies thanks to an individual approach and interactive methods",
     sixth_stat:"Graduates note that they have acquired practical skills that they immediately apply in real projects",
     // Секция Лучших кейсов
-    h2_course:"Лучшие кейсы",
+    h2_course:"Best Courses",
       case_one:"Hem",
       case_two:"OUI WILL",
       case_three:"ZEEKR",
