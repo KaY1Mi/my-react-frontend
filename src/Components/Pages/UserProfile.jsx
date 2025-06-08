@@ -17,6 +17,7 @@ const UserProfile = () => {
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
 const [successMessage, setSuccessMessage] = useState('');
 const [errorMessage, setErrorMessage] = useState('');
+const [isEditing, setIsEditing] = useState({ username: false, email: false, password: false });
 
 useEffect(() => {
   const fetchUserData = async () => {
@@ -128,48 +129,68 @@ const handleSave = async () => {
           <div className="col-span-full px-5 md:col-span-2 md:col-start-2 xl:col-span-3 xl:col-start-6">
             <div className="grid grid-cols-1 gap-5">
               <div className="grid grid-cols-1 gap-4 w-full">
-              <h2 className="text-3xl font-bold font-bebas text-center">
+              <h2 className="text-3xl font-bold font-bebas text-center relative">
   <input
     type="text"
     name="username"
     value={formData.username}
     onChange={handleChange}
-    className="w-full text-center bg-transparent border-b border-gray-300 focus:outline-none"
+    readOnly={!isEditing.username}
+    className={`w-full text-center bg-transparent border-b border-gray-300 focus:outline-none ${
+      !isEditing.username ? 'text-gray-400 cursor-default' : ''
+    }`}
   />
+  <button
+    type="button"
+    onClick={() => setIsEditing(prev => ({ ...prev, username: true }))}
+    className="absolute right-0 top-1/2 -translate-y-1/2 text-blue-600 text-sm"
+  >
+    ✏️ {t.edit || 'Edit'}
+  </button>
 </h2>
 
-<div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
+<div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2">
   <label className="font-bebas text-4xl">{t.email}:</label>
   <input
     type="email"
     name="email"
     value={formData.email}
     onChange={handleChange}
-    className="font-manrope text-base text-neutal-grey break-all text-right border-b border-gray-300 focus:outline-none"
+    readOnly={!isEditing.email}
+    className={`font-manrope text-base text-neutal-grey break-all text-right border-b border-gray-300 focus:outline-none ${
+      !isEditing.email ? 'text-gray-400 cursor-default' : ''
+    }`}
   />
+  <button
+    type="button"
+    onClick={() => setIsEditing(prev => ({ ...prev, email: true }))}
+    className="text-blue-600 text-sm"
+  >
+    ✏️ {t.edit || 'Edit'}
+  </button>
 </div>
 
-<div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2">
+<div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-2 gap-y-2">
   <label className="font-bebas text-4xl">{t.password || 'Password'}:</label>
   <input
     type="password"
     name="password"
     value={formData.password}
     onChange={handleChange}
-    className="font-manrope text-base text-neutal-grey break-all text-right border-b border-gray-300 focus:outline-none"
+    readOnly={!isEditing.password}
+    placeholder="••••••••"
+    className={`font-manrope text-base text-neutal-grey break-all text-right border-b border-gray-300 focus:outline-none ${
+      !isEditing.password ? 'text-gray-400 cursor-default' : ''
+    }`}
   />
+  <button
+    type="button"
+    onClick={() => setIsEditing(prev => ({ ...prev, password: true }))}
+    className="text-blue-600 text-sm"
+  >
+    ✏️ {t.edit || 'Edit'}
+  </button>
 </div>
-
-{successMessage && <p className="text-green-600">{successMessage}</p>}
-{errorMessage && <p className="text-red-600">{errorMessage}</p>}
-
-<button
-  type="button"
-  onClick={handleSave}
-  className="bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4"
->
-  {loading ? t.saving : t.btn_save}
-</button>
               </div>
             </div>
           </div>
