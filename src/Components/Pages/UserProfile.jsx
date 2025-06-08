@@ -60,7 +60,7 @@ const UserProfile = () => {
     }
 
     try {
-      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/update/', {
+      const response = await fetch('https://my-django-backend-rrxo.onrender.com/user/profile/update/', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
