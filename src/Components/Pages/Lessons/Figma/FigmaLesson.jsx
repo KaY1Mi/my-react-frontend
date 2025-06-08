@@ -80,7 +80,7 @@ const { language } = useContext(LanguageContext); // Получаем язык �
                 <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>{t.f_l_h2_h2}</h2>
                 <iframe
                     className="stat-item stat-top w-full col-span-full h-[650px]  rounded-lg shadow-xl"
-                    src={`https://www.youtube.com/embed/uJVpb_Yrg10?si=akVAS_Gp7yLoPEhA`}
+                    src={`https://rutube.ru/video/5dd33587d9d8bbf13bc0204a919cbf03/`}
                     title="YouTube video player"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
