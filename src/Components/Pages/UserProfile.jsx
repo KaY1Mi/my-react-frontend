@@ -19,28 +19,25 @@ const UserProfile = () => {
   const [userData, setUserData] = useState({});
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const fileInputRef = useRef(null);
   const [isAvatarChanged, setIsAvatarChanged] = useState(false);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
 
-const defaultAvatars = [
-  { id: 1, image: defaultAvatar1, backendPath: '/media/avatars/avatar1.png' },
-  { id: 2, image: defaultAvatar2, backendPath: '/media/avatars/avatar2.png' },
-  { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/avatar3.png' }
-];
+  const defaultAvatars = [
+    { id: 1, image: defaultAvatar1, backendPath: '/media/avatars/avatar1.png' },
+    { id: 2, image: defaultAvatar2, backendPath: '/media/avatars/avatar2.png' },
+    { id: 3, image: defaultAvatar3, backendPath: '/media/avatars/avatar3.png' }
+  ];
 
   const getFullAvatarUrl = (avatarPath) => {
     if (!avatarPath) return null;
-    return avatarPath; // Cloudinary вернёт абсолютный URL
+    return avatarPath; // Cloudinary URL или абсолютный путь
   };
 
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
+      if (!token) return navigate('/login');
 
       try {
         const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/user/profile/', {
@@ -48,11 +45,9 @@ const defaultAvatars = [
         });
 
         if (!response.ok) throw new Error(t.profile_load_error);
-
         const data = await response.json();
         setUserData(data);
-
-        const avatarUrl = getFullAvatarUrl(data.avatar);
+        const avatarUrl = getFullAvatarUrl(data.avatar || data.default_avatar);
         if (avatarUrl) setAvatarPreview(avatarUrl);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -84,6 +79,7 @@ const defaultAvatars = [
     setSelectedFile(file);
     setAvatarPreview(URL.createObjectURL(file));
     setIsAvatarChanged(true);
+    e.target.value = null; // очистить выбор
   };
 
   const saveAvatar = async (avatarData) => {
@@ -96,14 +92,15 @@ const defaultAvatars = [
     try {
       setLoading(true);
       const isFile = avatarData instanceof FormData;
-const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
-  method: 'PATCH',
-  headers: {
-    'Authorization': `Token ${token}`,
-    ...(isFile ? {} : { 'Content-Type': 'application/json' })  // Убедись, что этот заголовок добавлен
-  },
-  body: isFile ? avatarData : JSON.stringify({ avatar: avatarData })
-});
+
+      const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/change-avatar/', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Token ${token}`,
+          ...(isFile ? {} : { 'Content-Type': 'application/json' })
+        },
+        body: isFile ? avatarData : JSON.stringify({ avatar: avatarData })
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -113,8 +110,16 @@ const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/ch
 
       const data = await response.json();
       const avatarUrl = getFullAvatarUrl(data.avatar);
+
       setAvatarPreview(avatarUrl);
       setIsAvatarChanged(false);
+
+      setUserData((prev) => ({
+        ...prev,
+        avatar: selectedFile ? avatarUrl : null,
+        default_avatar: selectedFile ? '' : avatarData
+      }));
+
       alert(t.changes_saved);
       return avatarUrl;
     } catch (error) {
@@ -127,34 +132,34 @@ const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/ch
 
   const handleSaveChanges = async () => {
     if (!isAvatarChanged) return;
-  
+
     try {
       if (selectedFile) {
-        // Загружаем файл
         const formData = new FormData();
         formData.append('avatar', selectedFile);
         await saveAvatar(formData);
-      } else if (avatarPreview) {
-        // Отправляем путь к дефолтному аватару
-        const selected = defaultAvatars.find((a) => avatarPreview.includes(a.backendPath));
+      } else {
+        const selected = defaultAvatars.find((a) =>
+          userData.default_avatar === a.backendPath
+        );
         if (selected) {
           await saveAvatar(selected.backendPath);
         }
       }
-    } catch (error) {
+    } catch {
       alert(t.avatar_upload_error);
     }
   };
-  const handleSelectDefaultAvatar = async (avatar) => {
-    try {
-      await saveAvatar(avatar.backendPath);
-      setAvatarPreview(avatar.image);  // обновляем превью на локальное изображение
-      setIsAvatarChanged(false);
-    } catch (error) {
-      alert(t.avatar_save_error);
-    }
+
+  const handleSelectDefaultAvatar = (avatar) => {
+    setAvatarPreview(avatar.image);
+    setSelectedFile(null);
+    setUserData((prev) => ({
+      ...prev,
+      default_avatar: avatar.backendPath
+    }));
+    setIsAvatarChanged(true);
   };
-  
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -169,13 +174,13 @@ const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/ch
         <section className="grid grid-cols-2 py-5 gap-5 md:grid-cols-4 md:gap-5 lg:grid-cols-4 xl:grid-cols-10">
           <div className="col-span-full xl:col-span-4">
             <button onClick={() => navigate("/profile")} className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
-              {t.link_userprofile}  
+              {t.link_userprofile}
             </button>
             <button onClick={() => navigate("/likecourses")} className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
-              {t.link_linkcourses}  
+              {t.link_linkcourses}
             </button>
             <button onClick={() => setShowLogoutModal(true)} className='text-2xl col-span-full px-2.5 py-2.5 w-full border-b border-black text-neutal-black font-bebas text-left md:text-4xl md:h-[60px] md:px-5 hover:bg-neutal-blue'>
-              {t.link_logout}  
+              {t.link_logout}
             </button>
           </div>
 
@@ -204,22 +209,21 @@ const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/ch
               </div>
 
               <div className="flex justify-center gap-4 mt-2">
-                {defaultAvatars.map((avatar) => (
-                  <div 
-                  key={avatar.id}
-                  className={`w-14 h-14 rounded-full overflow-hidden cursor-pointer border-2 ${
-                    avatarPreview?.includes(avatar.backendPath) ? 'border-blue-500' : 'border-gray-300'
-                  } hover:border-blue-400 transition-colors`}
-                  onClick={() => handleSelectDefaultAvatar(avatar)}
-                  title={`Аватар ${avatar.id}`}
-                >
-                  <img 
-                    src={avatar.image} 
-                    alt={`Default avatar ${avatar.id}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                ))}
+                {defaultAvatars.map((avatar) => {
+                  const isSelected = userData.default_avatar === avatar.backendPath;
+                  return (
+                    <div
+                      key={avatar.id}
+                      className={`w-14 h-14 rounded-full overflow-hidden cursor-pointer border-2 ${
+                        isSelected ? 'border-blue-500' : 'border-gray-300'
+                      } hover:border-blue-400 transition-colors`}
+                      onClick={() => handleSelectDefaultAvatar(avatar)}
+                      title={`Аватар ${avatar.id}`}
+                    >
+                      <img src={avatar.image} alt={`Default avatar ${avatar.id}`} className="w-full h-full object-cover" />
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="grid grid-cols-1 gap-4 w-full">
@@ -233,7 +237,12 @@ const response = await fetch('https://my-django-backend-rrxo.onrender.com/api/ch
                   </p>
                 </div>
 
-                <button type="button" className={`bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4 ${!isAvatarChanged ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleSaveChanges} disabled={!isAvatarChanged || loading}>
+                <button
+                  type="button"
+                  className={`bg-neutal-black h-[50px] text-white font-bebas text-xl w-full rounded-[10px] mt-4 ${!isAvatarChanged ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  onClick={handleSaveChanges}
+                  disabled={!isAvatarChanged || loading}
+                >
                   {loading ? t.saving : t.btn_save}
                 </button>
               </div>
