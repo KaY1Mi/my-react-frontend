@@ -78,8 +78,7 @@ const { language } = useContext(LanguageContext); // Получаем язык �
 
             <section class="mx-2.5 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-10 my-5 md:mx-5">
                 <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>{t.f_l_h2_h2}</h2>
-                <iframe width="1920" height="1080" src="https://rutube.ru/play/embed/5dd33587d9d8bbf13bc0204a919cbf03/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-                <p><a href="https://rutube.ru/video/5dd33587d9d8bbf13bc0204a919cbf03/">Figma с нуля за 1 час! (уроки веб дизайна для начинающих)</a> от <a href="https://rutube.ru/video/person/12549020/">VideoSmile</a> на <a href="https://rutube.ru/">RUTUBE</a></p>
+                <iframe width="1440" height="1024" src="https://rutube.ru/play/embed/5dd33587d9d8bbf13bc0204a919cbf03/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
                 <button className='stat-item stat-bottom text-2xl mt-5 font-bebas bg-black text-white w-full col-span-full rounded-[10px] h-[70px] md:h-[100px] md:text-3xl ' onClick={()=>navigate('/figma-lesson-two')}>{t.f_btn_2}</button>
             </section>
             
