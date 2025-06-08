@@ -65,13 +65,7 @@ const TildaLesson2 = () => {
 
       <section className="mx-2.5 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-10 my-5 md:mx-5">
         <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>{t.tilda_lesson2_video_title}</h2>
-        <iframe
-          className="stat-item stat-top w-full col-span-full h-[650px] rounded-lg shadow-xl"
-          src="https://www.youtube.com/embed/your-tilda-video-id"
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+        <iframe width="1860" height="1024" src="https://rutube.ru/play/embed/22afe5645366c9f4f68f148f7a11e05d/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
         <button
           className='stat-item stat-bottom text-2xl mt-5 font-bebas bg-black text-white w-full col-span-full rounded-[10px] h-[70px] md:h-[100px] md:text-3xl'
           onClick={() => navigate('/tilda-lesson-three')}

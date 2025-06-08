@@ -77,13 +77,7 @@ const { language } = useContext(LanguageContext); // Получаем язык �
 
             <section class="mx-2.5 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-10 my-5 md:mx-5">
                 <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>{t.f_2_h2_h2}</h2>
-                <iframe
-                    className="stat-item stat-top w-full col-span-full h-[650px]  rounded-lg shadow-xl"
-                    src={`https://www.youtube.com/embed/uJVpb_Yrg10?si=akVAS_Gp7yLoPEhA`}
-                    title="YouTube video player"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                ></iframe>
+                <iframe width="1860" height="1024" src="https://rutube.ru/play/embed/e2e404b1d9b713fb4ce65cfd9def003d/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
                 <button onClick={()=>navigate('/figma-lesson-three')} className='stat-item stat-bottom text-2xl mt-5 font-bebas bg-black text-white w-full col-span-full rounded-[10px] h-[70px] md:h-[100px] md:text-3xl '>{t.f_btn_3}</button>
             </section>
             
