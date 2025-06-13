@@ -204,6 +204,29 @@ const VacancieSix = () => {
           <p className="font-manrope text-sm text-neutral-white uppercase md:text-xl">{t.p_vac_wish_six_three}</p>
         </div>
 
+        <div className="stat-item stat-left col-span-1 h-[200px] px-[5px] py-2.5 border-b border-white md:col-span-2 md:h-[310px] flex flex-col justify-between xl:col-span-3 xl:stat-item xl:stat-right">
+          <h3 className="font-bebas text-4xl text-neutal-blue md:text-6xl lg:text-7xl 2xl:text-8xl">
+            {t.h3_vac_wish_six_four}
+          </h3>
+          <p className="font-manrope text-sm text-neutral-white uppercase md:text-xl">{t.p_vac_wish_six_four}</p>
+        </div>
+
+
+        <div className="stat-item stat-left col-span-1 h-[200px] px-[5px] py-2.5 border-b border-white md:col-span-2 md:h-[310px] flex flex-col justify-between xl:col-span-3 xl:stat-item xl:stat-right">
+          <h3 className="font-bebas text-4xl text-neutal-blue md:text-6xl lg:text-7xl 2xl:text-8xl">
+            {t.h3_vac_wish_six_five}
+          </h3>
+          <p className="font-manrope text-sm text-neutral-white uppercase md:text-xl">{t.p_vac_wish_six_five}</p>
+        </div>
+
+
+        <div className="stat-item stat-left col-span-1 h-[200px] px-[5px] py-2.5 border-b border-white md:col-span-2 md:h-[310px] flex flex-col justify-between xl:col-span-3 xl:stat-item xl:stat-right">
+          <h3 className="font-bebas text-4xl text-neutal-blue md:text-6xl lg:text-7xl 2xl:text-8xl">
+            {t.h3_vac_wish_six_six}
+          </h3>
+          <p className="font-manrope text-sm text-neutral-white uppercase md:text-xl">{t.p_vac_wish_six_six}</p>
+        </div>
+
         <button
           onClick={() => setShowLogoutModal(true)}
           className="col-span-full w-full bg-white opacity-50 font-bebas rounded-[10px] h-[80px] text-2xl xl:text-3xl hover:bg-white hover:opacity-100 transition-all duration-500"
