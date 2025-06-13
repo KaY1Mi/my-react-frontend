@@ -142,9 +142,9 @@ return (
         <div className="stat-item stat-right bg-white rounded-[10px] col-span-full p-2.5 grid grid-cols-2 md:grid-cols-4 md:px-2.5 md:py-5 xl:col-span-4 xl:col-start-7 gap-2.5 h-full">
           <div className="contents">
             <h3 className='font-bebas text-3xl text-neutal-black col-span-1 md:col-span-2 md:text-4xl'>{t.h3_vac}</h3>
-            <p className='font-manrope font-medium text-[13px] uppercase self-center text-right md:col-span-2  md:text-base'>{t.p_vac_name_two}</p>
-            <h4 className='font-bebas text-2xl col-span-full'>{t.h4_price_one_two}</h4>
-            <h5 className='font-manrope text-sm col-span-full md:text-base'>{t.h5_text_one_two}</h5>
+            <p className='font-manrope font-medium text-[13px] uppercase self-center text-right md:col-span-2  md:text-base'>{t.p_vac_name_four}</p>
+            <h4 className='font-bebas text-2xl col-span-full'>{t.h4_price_one_four}</h4>
+            <h5 className='font-manrope text-sm col-span-full md:text-base'>{t.h5_text_one_four}</h5>
             <button onClick={()=>navigate('/vacancie-four')} className='col-span-full bg-neutal-black text-neutal-white font-bebas text-xl min-h-[45px] rounded-[10px] mt-2.5 md:min-h-[55px] hover:bg-gray-800 focus:bg-gray-800 active:bg-gray-700 transition-colors duration-200'>{t.btn_vac}</button>
           </div>
         </div>
