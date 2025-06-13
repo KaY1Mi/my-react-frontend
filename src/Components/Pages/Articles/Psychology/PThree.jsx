@@ -116,7 +116,7 @@ const t = translations[language];
                 style={{ objectPosition: '70% 50%' }} 
             />
             <div className="absolute bottom-0 text-center left-0 bg-black bg-opacity-50 right-0 p-4">
-                <h1 className="stat-item stat-top text-6xl font-bebas text-neutal-white md:text-7xl xl:text-[250px] 2xl:text-[350px] leading-none ">{t.article_typo1_h1}</h1>
+                <h1 className="stat-item stat-top text-6xl font-bebas text-neutal-white md:text-7xl xl:text-[250px] 2xl:text-[250px] leading-none ">{t.psycho_three}</h1>
             </div>
           </div>
           <div className="stat-item stat-left mx-2.5 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-10 md:mx-5">
