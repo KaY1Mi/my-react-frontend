@@ -194,7 +194,7 @@ const VacancieSix = () => {
           <h3 className="font-bebas text-4xl text-neutal-blue md:text-6xl lg:text-7xl 2xl:text-8xl">
             {t.h3_vac_wish_six_two}
           </h3>
-          <p className="font-manrope text-sm ttext-neutal-white uppercase md:text-xl">{t.p_vac_wish_six_two}</p>
+          <p className="font-manrope text-sm text-neutal-white uppercase md:text-xl">{t.p_vac_wish_six_two}</p>
         </div>
 
         <div className="stat-item stat-left col-span-1 h-[200px] px-[5px] py-2.5 border-b border-white md:col-span-2 md:h-[310px] flex flex-col justify-between xl:col-span-3 xl:stat-item xl:stat-right">
