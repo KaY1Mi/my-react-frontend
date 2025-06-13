@@ -177,7 +177,7 @@ return (
           <p className='font-manrope font-medium text-[13px] uppercase self-center text-right md:col-span-2 md:text-base'>{t.p_vac_name_six}</p>
           <h4 className='font-bebas text-2xl col-span-full'>{t.h4_price_one_six}</h4>
           <h5 className='font-manrope text-sm col-span-full md:text-base'>{t.h5_text_one_six}</h5>
-          <button onClick={()=>navigate('/vacancie-six')} className='col-span-full bg-neutal-black text-neutal-white font-bebas text-xl min-h-[45px] rounded-[10px] mt-2.5 md:min-h-[55px] hover:bg-gray-800 focus:bg-gray-800 active:bg-gray-700 transition-colors duration-200'>{t.btn_vac}</button>
+          <button onClick={()=>navigate('/vacancie-five')} className='col-span-full bg-neutal-black text-neutal-white font-bebas text-xl min-h-[45px] rounded-[10px] mt-2.5 md:min-h-[55px] hover:bg-gray-800 focus:bg-gray-800 active:bg-gray-700 transition-colors duration-200'>{t.btn_vac}</button>
         </div>
       </div>
 
@@ -188,7 +188,7 @@ return (
           <p className='font-manrope font-medium text-[13px] uppercase self-center text-right md:col-span-2 md:text-base'>{t.p_vac_name_seven}</p>
           <h4 className='font-bebas text-2xl col-span-full'>{t.h4_price_one_seven}</h4>
           <h5 className='font-manrope text-sm col-span-full md:text-base'>{t.h5_text_one_seven}</h5>
-          <button onClick={()=>navigate('/vacancie-seven')} className='col-span-full bg-neutal-black text-neutal-white font-bebas text-xl min-h-[45px] rounded-[10px] mt-2.5 md:min-h-[55px] hover:bg-gray-800 focus:bg-gray-800 active:bg-gray-700 transition-colors duration-200'>{t.btn_vac}</button>
+          <button onClick={()=>navigate('/vacancie-five')} className='col-span-full bg-neutal-black text-neutal-white font-bebas text-xl min-h-[45px] rounded-[10px] mt-2.5 md:min-h-[55px] hover:bg-gray-800 focus:bg-gray-800 active:bg-gray-700 transition-colors duration-200'>{t.btn_vac}</button>
         </div>
       </div> 
 
@@ -203,7 +203,7 @@ return (
           <p className='font-manrope font-medium text-[13px] uppercase self-center text-right md:col-span-2 md:text-base'>{t.p_vac_name_eight}</p>
           <h4 className='font-bebas text-2xl col-span-full'>{t.h4_price_one_eight}</h4>
           <h5 className='font-manrope text-sm col-span-full md:text-base'>{t.h5_text_one_eight}</h5>
-          <button onClick={()=>navigate('/vacancie-eight')} className='col-span-full bg-neutal-black text-neutal-white font-bebas text-xl min-h-[45px] rounded-[10px] mt-2.5 md:min-h-[55px] hover:bg-gray-800 focus:bg-gray-800 active:bg-gray-700 transition-colors duration-200'>{t.btn_vac}</button>
+          <button onClick={()=>navigate('/vacancie-five')} className='col-span-full bg-neutal-black text-neutal-white font-bebas text-xl min-h-[45px] rounded-[10px] mt-2.5 md:min-h-[55px] hover:bg-gray-800 focus:bg-gray-800 active:bg-gray-700 transition-colors duration-200'>{t.btn_vac}</button>
         </div>
       </div>
     </section>
