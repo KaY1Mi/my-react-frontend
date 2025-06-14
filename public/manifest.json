@@ -1,19 +1,19 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Sakura Flow",
+  "name": "School UX/UI design",
   "icons": [
     {
-      "src": "Sakura.svg",
+      "src": "SakuraFlow.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "Sakura.png",
+      "src": "SakuraFlow192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "Sakura.png",
+      "src": "SakuraFlow512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
