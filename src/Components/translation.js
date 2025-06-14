@@ -685,22 +685,34 @@ export const translations = {
 
       // для вакансии 6
       p_vac_name_six:"ZZZ IT(⭐4.7)",
-      h4_price_one_six:"$2000 per month",
-      h5_text_one_six:"The ZZZ IT company requires interface designers with junior level knowledge",
-      h4_vac_name_six: "Junior Interface Designer",
-      h3_vac_price_six: "$2000 per month",
+      h4_price_one_six:"2000$ за месяц",
+      h5_text_one_six:"The company ZZZ IT VDK requires interface designers with junior level knowledge",
+      h2_vac_six:"ZZZ IT",
+      h3_vac_six:"American squad looking for young ux/ui designers from the CIS to expand their business",
+      h4_vac_name_six: "ux/ui дизайнер",
+      h3_vac_price_six: "2000$ per month",
       h5_vac: "Requirements",
   
       vac_list_six_one: "Basic understanding of UI/UX principles",
-      vac_list_six_two: "Knowledge of design tools like Figma or Sketch",
+      vac_list_six_two: "Knowledge of design tools such as Figma or Sketch",
       vac_list_six_three: "Ability to work in a team and communicate effectively",
   
       h3_vac_wish_six_one: "Creativity",
       p_vac_wish_six_one: "Bring fresh ideas and innovative designs",
-      h3_vac_wish_six_two: "Learning mindset",
-      p_vac_wish_six_two: "Eager to grow and learn new skills",
-      h3_vac_wish_six_three: "Team player",
-      p_vac_wish_six_three: "Collaborate efficiently with developers and designers",
+      h3_vac_wish_six_two: "Desire to learn",
+      p_vac_wish_six_two: "Desire to develop and learn new skills",
+      h3_vac_wish_six_three: "Teammate",
+      p_vac_wish_six_three: "Collaborate effectively with developers and designers",
+      h3_vac_wish_six_four: "EXPERIENCE",
+      p_vac_wish_six_four: "More than 1-3 years in ux/ui design",
+      h3_vac_wish_six_five: "TECHNOLOGIES",
+      p_vac_wish_six_five: "CJM, UserFlow,TaskFlow",
+      h3_vac_wish_six_six: "SKILLS",
+      p_vac_wish_six_six: "Problem solving, teamwork",
+  
+      btn_feedback: "Apply for a vacancy",
+      h2_vac_vac: "Vacancy",
+      h2_vac_wish: "What do we expect from you",
   
       // Общие кнопки/тексты
       btn_feedback: "Respond to Vacancy",
