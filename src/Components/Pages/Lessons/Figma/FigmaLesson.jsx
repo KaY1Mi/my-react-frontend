@@ -78,7 +78,19 @@ const { language } = useContext(LanguageContext); // Получаем язык �
 
             <section class="mx-2.5 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-10 my-5 md:mx-5">
                 <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>{t.f_l_h2_h2}</h2>
-                <iframe width="1860" height="1024" src="https://rutube.ru/play/embed/5dd33587d9d8bbf13bc0204a919cbf03/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+                <div className="relative w-full pt-[56.25%] col-span-full">
+  <iframe
+    src="https://rutube.ru/play/embed/5dd33587d9d8bbf13bc0204a919cbf03/"
+    className="absolute top-0 left-0 w-full h-full"
+    frameBorder="0"
+    allow="clipboard-write; autoplay"
+    webkitAllowFullScreen
+    mozAllowFullScreen
+    allowFullScreen
+    title="Figma Lesson Video"
+  ></iframe>
+</div>
+
                 <button className='stat-item stat-bottom text-2xl mt-5 font-bebas bg-black text-white w-full col-span-full rounded-[10px] h-[70px] md:h-[100px] md:text-3xl ' onClick={()=>navigate('/figma-lesson-two')}>{t.f_btn_2}</button>
             </section>
             

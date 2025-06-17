@@ -79,7 +79,18 @@ const AfterEffectsLesson3 = () => {
 
             <section className="mx-2.5 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-10 my-5 md:mx-5">
                 <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>{t.ae_lesson3_video_title}</h2>
-                <iframe width="1860" height="1024" src="https://rutube.ru/play/embed/a67e08903dbb18dc26828b2444e06f03/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+                <div className="relative w-full pt-[56.25%] col-span-full">
+  <iframe
+    src="https://rutube.ru/play/embed/a67e08903dbb18dc26828b2444e06f03/"
+    className="absolute top-0 left-0 w-full h-full"
+    frameBorder="0"
+    allow="clipboard-write; autoplay"
+    webkitAllowFullScreen
+    mozAllowFullScreen
+    allowFullScreen
+    title="After Effects Lesson 3 Video"
+  ></iframe>
+</div>
                 <button 
                     className='stat-item stat-bottom text-2xl mt-5 font-bebas bg-black text-white w-full col-span-full rounded-[10px] h-[70px] md:h-[100px] md:text-3xl'
                     onClick={handleCompleteCourse}
@@ -90,7 +101,8 @@ const AfterEffectsLesson3 = () => {
 
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full animate-fade-in">
+                    <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-[90%] sm:max-w-md animate-fade-in">
+
                         <h3 className="text-2xl font-bebas mb-4">{t.ae_course_complete_title}</h3>
                         <p className="font-manrope mb-6">{t.ae_course_complete_message}</p>
                         <div className="flex justify-between">

@@ -52,41 +52,57 @@ const TildaLesson3 = () => {
       {/* ... */}
 
       <section className="mx-2.5 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-10 my-5 md:mx-5">
-        <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>{t.tilda_lesson3_video_title}</h2>
-        <iframe width="1860" height="1024" src="https://rutube.ru/play/embed/4e5729477ecf4d09ce9cfdf9568bf77a/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-        <button
-          className='stat-item stat-bottom text-2xl mt-5 font-bebas bg-black text-white w-full col-span-full rounded-[10px] h-[70px] md:h-[100px] md:text-3xl'
-          onClick={handleCompleteCourse}
-        >
-          {t.tilda_lesson3_complete_button}
-        </button>
-      </section>
+  <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>
+    {t.tilda_lesson3_video_title}
+  </h2>
+
+  <div className="relative w-full pt-[56.25%] col-span-full">
+    <iframe
+      src="https://rutube.ru/play/embed/4e5729477ecf4d09ce9cfdf9568bf77a/"
+      className="absolute top-0 left-0 w-full h-full"
+      frameBorder="0"
+      allow="clipboard-write; autoplay"
+      webkitAllowFullScreen
+      mozAllowFullScreen
+      allowFullScreen
+      title="Tilda Lesson Video"
+    ></iframe>
+  </div>
+
+  <button
+    className='stat-item stat-bottom text-2xl mt-5 font-bebas bg-black text-white w-full col-span-full rounded-[10px] h-[70px] md:h-[100px] md:text-3xl'
+    onClick={handleCompleteCourse}
+  >
+    {t.tilda_lesson3_complete_button}
+  </button>
+</section>
 
       {/* Модальное окно */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full animate-fade-in">
-            <h3 className="text-2xl font-bebas mb-4">{t.tilda_course_complete_title}</h3>
-            <p className="font-manrope mb-6">{t.tilda_course_complete_message}</p>
-            <div className="flex justify-between">
-              <a 
-                href="https://web.telegram.org/k/#-2367128985" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                {t.tilda_join_telegram}
-              </a>
-              <button 
-                onClick={closeModal}
-                className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded"
-              >
-                {t.tilda_close}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-lg p-6 max-w-md w-full animate-fade-in">
+      <h3 className="text-2xl font-bebas mb-4">{t.tilda_course_complete_title}</h3>
+      <p className="font-manrope mb-6">{t.tilda_course_complete_message}</p>
+      <div className="flex justify-between">
+        <a 
+          href="https://web.telegram.org/k/#-2367128985" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          {t.tilda_join_telegram}
+        </a>
+        <button 
+          onClick={closeModal}
+          className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded"
+        >
+          {t.tilda_close}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       <footer className="bg-neutal-black">
         <Footer language={language} />

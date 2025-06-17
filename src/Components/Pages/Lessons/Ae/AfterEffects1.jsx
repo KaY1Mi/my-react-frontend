@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useEffect, useContext, useState } from 'react'
 import { translations } from '../../../translation'
 import HeaderBlack from '../../../HeaderBlack';
 import Footer from '../../../Footer';
@@ -10,8 +10,18 @@ const AfterEffects1 = () => {
     const navigate = useNavigate()
     const { language } = useContext(LanguageContext);
     const t = translations[language];
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
+      // Проверка на мобильное устройство
+      const checkIfMobile = () => {
+        setIsMobile(window.innerWidth < 768);
+      };
+      
+      checkIfMobile();
+      window.addEventListener('resize', checkIfMobile);
+      
+      // Анимации
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -23,7 +33,10 @@ const AfterEffects1 = () => {
       const items = document.querySelectorAll('.stat-item');
       items.forEach(item => observer.observe(item));
 
-      return () => items.forEach(item => observer.unobserve(item));
+      return () => {
+        window.removeEventListener('resize', checkIfMobile);
+        items.forEach(item => observer.unobserve(item));
+      };
     }, []);
 
     return (
@@ -67,7 +80,20 @@ const AfterEffects1 = () => {
 
             <section className="mx-2.5 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-10 my-5 md:mx-5">
                 <h2 className='stat-item stat-top col-span-full font-bebas text-6xl md:text-7xl lg:text-8xl'>{t.ae_l_h2_h2}</h2>
-                <iframe width="1860" height="1024" src="https://rutube.ru/play/embed/420b813feb0757654e2f45d1dea6c604/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+                
+                {/* Адаптивный видео-плеер */}
+                <div className="col-span-full relative pb-[56.25%] h-0 overflow-hidden my-5">
+                    <iframe 
+                        src="https://rutube.ru/play/embed/420b813feb0757654e2f45d1dea6c604/" 
+                        frameBorder="0" 
+                        allow="clipboard-write; autoplay" 
+                        webkitAllowFullScreen 
+                        mozallowfullscreen 
+                        allowFullScreen
+                        className="absolute top-0 left-0 w-full h-full"
+                    />
+                </div>
+                
                 <button
                     className='stat-item stat-bottom text-2xl mt-5 font-bebas bg-black text-white w-full col-span-full rounded-[10px] h-[70px] md:h-[100px] md:text-3xl'
                     onClick={() => navigate('/aftereffects-lesson-two')}
