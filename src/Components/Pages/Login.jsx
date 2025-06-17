@@ -132,7 +132,7 @@ const Login = () => {
         navigate('/profile/'); // Важно: слеш в конце!
         
         // Для надёжности можно добавить:
-        window.location.reload(); // Только если navigate не работает
+        window.location.assign('/profile/'); // Слеш обязателен!
       }
       
     } catch (error) {
