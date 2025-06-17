@@ -120,19 +120,20 @@ const Login = () => {
       
       const data = await response.json();
       
-      if (!response.ok) {
-        throw new Error(data.message || data.detail || 'Login failed');
+      if (response.ok) {
+        // Сохраняем токен и данные пользователя
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify({
+          email: data.email,
+          id: data.user_id
+        }));
+        
+        // Используем navigate с явным слешем
+        navigate('/profile/'); // Важно: слеш в конце!
+        
+        // Для надёжности можно добавить:
+        window.location.reload(); // Только если navigate не работает
       }
-      
-      // Сохраняем токен и данные пользователя
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify({
-        email: data.email,
-        id: data.user_id
-      }));
-      
-      // Принудительное обновление и навигация
-      window.location.href = '/profile'; // Используем полную перезагрузку
       
     } catch (error) {
       setErrors(error.message);
