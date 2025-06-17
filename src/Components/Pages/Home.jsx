@@ -57,9 +57,6 @@ const Home = () => {
   const sectionsRef = useRef([]);
   const scrollTimeout = useRef(null);
   const [activeFAQ, setActiveFAQ] = useState(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const isAuthenticated = false; // или получай из контекста/хранилища
-
   const handleLanguageChange = useCallback((lang) => {
     setLanguage(lang);
     if (typeof window !== 'undefined') {
@@ -83,18 +80,12 @@ const Home = () => {
   }, [favorites]);
 
   const toggleFavorite = (courseId) => {
-    if (!isAuthenticated) {
-      setShowAuthModal(true);
-      return;
-    }
-  
     setFavorites(prev => 
       prev.includes(courseId) 
         ? prev.filter(id => id !== courseId) 
         : [...prev, courseId]
     );
   };
-  
 
 
   const coursesData = [
@@ -390,47 +381,84 @@ const Home = () => {
 
       {/* Секция Лучшие курсы */}
       <section ref={addToRefs} className={`snap-start bg-neutal-white ${isMobile ? 'min-h-screen' : 'h-screen'}`}>
-        <div className="grid grid-cols-2 py-10 px-2.5 gap-5 md:grid-cols-4 md:px-5 md:gap-5 lg:grid-cols-4 xl:grid-cols-10 min-h-screen">
-          <h2 className='stat-item stat-left font-bebas flex items-center col-span-full text-neutal-black text-[64px] leading-none md:text-9xl xl:col-span-6'>
-            {t.h2_best_courses}
-          </h2>
+          <div className="grid grid-cols-2 py-10 px-2.5 gap-5 md:grid-cols-4 md:px-5 md:gap-5 lg:grid-cols-4 xl:grid-cols-10 min-h-screen">
+            <h2 className='stat-item stat-left font-bebas flex items-center col-span-full text-neutal-black text-[64px] leading-none md:text-9xl xl:col-span-6'>
+              {t.h2_best_courses}
+            </h2>
 
-          <Link to="/courses" className='stat-item stat-right col-span-full font-bebas justify-start font-light text-neutal-black text-4xl leading-none flex items-center gap-2 xl:col-span-4 xl:justify-end'>
-            <span>{t.cours_link}</span>
-            <img src={ArrowLink} alt="" className="inline-block" />
-          </Link>
+            <Link to="/courses" className='stat-item stat-right col-span-full font-bebas justify-start font-light text-neutal-black text-4xl leading-none flex items-center gap-2 xl:col-span-4 xl:justify-end'>
+              <span>{t.cours_link}</span>
+              <img src={ArrowLink} alt="" className="inline-block" />
+            </Link>
 
-          {/* Карточка UX */}
-          <div className="stat-item stat-bottom order-1 col-span-2 space-y-[15px] md:col-span-4 xl:col-span-4 xl:order-2 relative">
-            <div className="relative">
-              <img src={ux} alt="Баннер курса по фигма" className='w-full rounded-[10px]'/>
-              {/* Иконка платного курса */}
-              <div className="absolute top-[15px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center">
-                <img src={dollar} alt="платный курс" />
+            {/* Карточка UX */}
+            <div className="stat-item stat-bottom order-1 col-span-2 space-y-[15px] md:col-span-4 xl:col-span-4 xl:order-2 relative">
+              <div className="relative">
+                <img src={ux} alt="Баннер курса по фигма" className='w-full rounded-[10px]'/>
+                {/* Иконка платного курса */}
+                <div className="absolute top-[15px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center">
+                  <img src={dollar} alt="платный курс" />
+                </div>
+                {/* Иконка избранного (изменена только эта часть) */}
+                <button 
+                  onClick={() => toggleFavorite('ux')}
+                  className="absolute top-[72px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
+                >
+                  <img 
+                    src={favorites.includes('ux') ? heart_red : heart_black} 
+                    alt="Избранное" 
+                  />
+                </button>
               </div>
-              {/* Иконка избранного */}
-              <button 
-                onClick={() => toggleFavorite('ux')}
-                className="absolute top-[72px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
-              >
-                <img 
-                  src={favorites.includes('ux') ? heart_red : heart_black} 
-                  alt="Избранное" 
-                />
+              <h4 className='font-bebas text-4xl text-neutal-black leading-none'>{t.h4_ux}</h4>
+              <button className='w-full bg-neutal-black text-neutal-white font-bebas text-2xl h-[60px] rounded-xl mt-2' onClick={()=>navigate('/figma-course')}>
+                {t.btn_courses}
               </button>
             </div>
-            <h4 className='font-bebas text-4xl text-neutal-black leading-none'>{t.h4_ux}</h4>
-            <button className='w-full bg-neutal-black text-neutal-white font-bebas text-2xl h-[60px] rounded-xl mt-2' onClick={()=>navigate('/figma-course')}>
-              {t.btn_courses}
-            </button>
+            
+            {/* Карточка Figma */}
+            <div className="stat-item stat-top order-2 col-span-2 space-y-[15px] md:col-span-2 xl:col-span-3 xl:order-1 relative">
+              <div className="relative">
+                <img src={figma} alt="Баннер курса по фигма" className='w-full rounded-[10px]'/>
+                {/* Иконка избранного (изменена только эта часть) */}
+                <button 
+                  onClick={() => toggleFavorite('figma')}
+                  className="absolute top-[15px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
+                >
+                  <img 
+                    src={favorites.includes('figma') ? heart_red : heart_black} 
+                    alt="Избранное" 
+                  />
+                </button>
+              </div>
+              <h4 className='font-bebas text-4xl text-neutal-black leading-none'>{t.h4_figma}</h4>
+              <button className='w-full bg-neutal-black text-neutal-white font-bebas text-2xl h-[60px] rounded-xl mt-2' onClick={()=>navigate('/figma-course')}>
+                {t.btn_courses}
+              </button>
+            </div>
+
+            {/* Карточка AE */}
+            <div className="stat-item stat-top order-3 col-span-2 space-y-[15px] md:col-span-2 xl:col-span-3 relative">
+              <div className="relative">
+                <img src={ae} alt="Баннер курса по фигма" className='w-full rounded-[10px]'/>
+                {/* Иконка избранного (изменена только эта часть) */}
+                <button 
+                  onClick={() => toggleFavorite('ae')}
+                  className="absolute top-[15px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
+                >
+                  <img 
+                    src={favorites.includes('ae') ? heart_red : heart_black} 
+                    alt="Избранное" 
+                  />
+                </button>
+              </div>
+              <h4 className='font-bebas text-4xl text-neutal-black leading-none'>{t.h4_ae}</h4>
+              <button className='w-full bg-neutal-black text-neutal-white font-bebas text-2xl h-[60px] rounded-xl mt-2' onClick={()=>navigate('/figma-course')}>
+                {t.btn_courses}
+              </button>
+            </div>
           </div>
-        </div>
       </section>
-
-      {/* Модальное окно авторизации */}
-      {showAuthModal && <AuthPromptModal onClose={() => setShowAuthModal(false)} />}
-   
-
 
       {/* Секция Отзывов */}
       <section ref={addToRefs} className={`snap-start bg-neutal-black ${isMobile ? 'min-h-screen' : 'h-screen'}`}>
