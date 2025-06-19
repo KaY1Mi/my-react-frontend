@@ -69,7 +69,12 @@ const Home = () => {
 
   // для избранного
   const [favorites, setFavorites] = useState([]);
- 
+  ;
+  if (!isAuthenticated) {
+    navigate('/login');
+    return;
+  }
+  
   // Загрузка избранного при монтировании
   useEffect(() => {
     const saved = localStorage.getItem('favorites');
@@ -94,11 +99,6 @@ const Home = () => {
     );
   };
   
-  ;
-  if (!isAuthenticated) {
-    navigate('/login');
-    return;
-  }
   
 
   const coursesData = [
