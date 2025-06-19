@@ -5,6 +5,7 @@ import Footer from '../Footer';
 import AnimatedCounter from '../AnimatedCounter';
 import { useContext } from 'react';
 import { LanguageContext } from './LanguageContext'; // Импортируем контекст
+import { useNavigate } from 'react-router-dom';
 const PayAll = () => {
     // для перевода текста
     const { language } = useContext(LanguageContext); // Получаем язык из контекста
@@ -20,7 +21,7 @@ const PayAll = () => {
 const [cardNumber, setCardNumber] = useState("");
 const [expiry, setExpiry] = useState('');
 const [cvv, setCvv] = useState('');
-
+const navigate = useNavigate()
 const formatCardNumber = (value) => {
   return value
     .replace(/\D/g, '') // только цифры
@@ -165,7 +166,7 @@ const formatCVV = (value) => value.replace(/\D/g, '').slice(0, 3); // тольк
                             <AnimatedCounter/>
                         </div>
 
-                        <button type="submit" className='font-bebas text-white bg-black w-full h-[55px] rounded-[10px] text-xl'>
+                        <button type="submit" className='font-bebas text-white bg-black w-full h-[55px] rounded-[10px] text-xl' onClick={()=>navigate('/ux-one')}>
                             {t.pay_btn}
                         </button> 
 

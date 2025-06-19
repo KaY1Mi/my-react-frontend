@@ -5,6 +5,7 @@ import Footer from '../Footer';
 import AnimatedCounter1 from '../AnimatedCounter1';
 import { useContext } from 'react';
 import { LanguageContext } from './LanguageContext'; // Импортируем контекст
+import { useNavigate } from 'react-router-dom';
 const PayAll = () => {
     // для перевода текста
     const { language } = useContext(LanguageContext); // Получаем язык из контекста
@@ -17,6 +18,7 @@ const PayAll = () => {
     const [isMobile, setIsMobile] = useState(false);
     const sectionsRef = useRef([]);
     const scrollTimeout = useRef(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
       const checkIfMobile = () => {
@@ -168,7 +170,7 @@ const formatCVV = (value) => value.replace(/\D/g, '').slice(0, 3);
                             <AnimatedCounter1/>
                         </div>
 
-                        <button type="submit" className='font-bebas text-white bg-black w-full h-[55px] rounded-[10px] text-xl'>
+                        <button type="submit" className='font-bebas text-white bg-black w-full h-[55px] rounded-[10px] text-xl' onClick={()=>navigate('/ux-one')}>
                             {t.pay_btn}
                         </button> 
 

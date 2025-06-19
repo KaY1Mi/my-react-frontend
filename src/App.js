@@ -50,6 +50,10 @@ import AfterEffects1 from "./Components/Pages/Lessons/Ae/AfterEffects1";
 import AfterEffects2 from './Components/Pages/Lessons/Ae/AfterEffects2';
 import AfterEffects3 from './Components/Pages/Lessons/Ae/AfterEffects3';
 import PayFixed from "./Components/Pages/PayFixed";
+import ProLesson1 from "./Components/Pages/Lessons/Pro/ProLesson1";
+import ProLesson2 from "./Components/Pages/Lessons/Pro/ProLesson2";
+import ProLesson3 from "./Components/Pages/Lessons/Pro/ProLesson3";
+import Ux1 from "./Components/Pages/Lessons/UX/Ux1";
 
 function App() {
   return (
@@ -133,6 +137,12 @@ function App() {
             <Route path="/aftereffects-lesson-one" element={<AfterEffects1 />} />
             <Route path="/aftereffects-lesson-two" element={<AfterEffects2 />} />
             <Route path="/aftereffects-lesson-three" element={<AfterEffects3 />} />
+            <Route path="/pro-site-one" element={<ProLesson1></ProLesson1>} />
+            <Route path="/pro-site-two" element={<ProLesson2></ProLesson2>} />
+            <Route path="/pro-site-three" element={<ProLesson3></ProLesson3>} />
+            <Route path="/ux-one" element={<Ux1></Ux1>} />
+            <Route path="/ux-two" element={<Ux2></Ux2>} />
+            <Route path="/ux-three" element={<Ux3></Ux3>} />
             
             {/* Резервный маршрут для 404 */}
             <Route path="*" element={<Navigate to="/" replace />} />
