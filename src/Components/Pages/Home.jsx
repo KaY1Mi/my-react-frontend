@@ -58,6 +58,8 @@ const Home = () => {
   const scrollTimeout = useRef(null);
   const [activeFAQ, setActiveFAQ] = useState(null);
   const isAuthenticated = !!localStorage.getItem('token'); // пример, подстрой под себя
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
 
   const handleLanguageChange = useCallback((lang) => {
     setLanguage(lang);
@@ -83,7 +85,7 @@ const Home = () => {
 
   const toggleFavorite = (courseId) => {
     if (!isAuthenticated) {
-      alert('Чтобы добавить курс в избранное, войдите в аккаунт');
+      setShowLoginModal(true); // Показываем модалку
       return;
     }
   
@@ -94,11 +96,7 @@ const Home = () => {
     );
   };
   
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
+
   
   // И никакого return после этого!
   
@@ -754,7 +752,31 @@ const Home = () => {
   </button>
 </form>
       </section>
-
+      {showLoginModal && (
+  <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white rounded-xl p-6 w-[90%] max-w-md text-center">
+      <h3 className="text-2xl font-bold mb-4">Вход необходим</h3>
+      <p className="mb-6">Чтобы добавить курс в избранное, пожалуйста, войдите в аккаунт.</p>
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => setShowLoginModal(false)}
+          className="px-6 py-2 rounded bg-gray-300 text-black hover:bg-gray-400"
+        >
+          Отмена
+        </button>
+        <button
+          onClick={() => {
+            setShowLoginModal(false);
+            navigate('/login');
+          }}
+          className="px-6 py-2 rounded bg-black text-white hover:bg-gray-900"
+        >
+          Войти
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       {/* Футер */}
       <footer ref={addToRefs} className={` bg-neutal-black ${isMobile ? 'min-h-screen' : 'h-screen'}`}>
         <Footer
