@@ -57,7 +57,7 @@ const Home = () => {
   const sectionsRef = useRef([]);
   const scrollTimeout = useRef(null);
   const [activeFAQ, setActiveFAQ] = useState(null);
-  const isAuthenticated = !!localStorage.getItem('token'); // пример, подстрой под себя
+  const isAuthenticated = !!localStorage.getItem('userToken'); // пример, подстрой под себя
 
   const handleLanguageChange = useCallback((lang) => {
     setLanguage(lang);
@@ -83,7 +83,7 @@ const Home = () => {
 
   const toggleFavorite = (courseId) => {
     if (!isAuthenticated) {
-      alert('Чтобы добавить в избранное, войдите в аккаунт');
+      alert('Чтобы добавить курс в избранное, войдите в аккаунт');
       return;
     }
   
@@ -93,8 +93,13 @@ const Home = () => {
         : [...prev, courseId]
     );
   };
+  
   ;
-
+  if (!isAuthenticated) {
+    navigate('/login');
+    return;
+  }
+  
 
   const coursesData = [
   {
