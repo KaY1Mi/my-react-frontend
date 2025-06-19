@@ -57,7 +57,7 @@ const Home = () => {
   const sectionsRef = useRef([]);
   const scrollTimeout = useRef(null);
   const [activeFAQ, setActiveFAQ] = useState(null);
-  const isAuthenticated = !!localStorage.getItem('userToken'); // пример, подстрой под себя
+  const isAuthenticated = !!localStorage.getItem('token'); // пример, подстрой под себя
 
   const handleLanguageChange = useCallback((lang) => {
     setLanguage(lang);
@@ -69,12 +69,7 @@ const Home = () => {
 
   // для избранного
   const [favorites, setFavorites] = useState([]);
-  ;
-  if (!isAuthenticated) {
-    navigate('/login');
-    return;
-  }
-  
+ 
   // Загрузка избранного при монтировании
   useEffect(() => {
     const saved = localStorage.getItem('favorites');
@@ -99,6 +94,11 @@ const Home = () => {
     );
   };
   
+  ;
+  if (!isAuthenticated) {
+    navigate('/login');
+    return;
+  }
   
 
   const coursesData = [
