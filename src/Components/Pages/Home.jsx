@@ -415,7 +415,7 @@ const Home = () => {
   <img
     src={isAuthenticated
       ? (favorites.includes('ux') ? heart_red : heart_black)
-      : heart_disabled} // иконка-сердечко с замком или серое
+      : heart_black} // иконка-сердечко с замком или серое
     alt="Избранное"
   />
 </button>
@@ -438,7 +438,7 @@ const Home = () => {
   <img
     src={isAuthenticated
       ? (favorites.includes('figma') ? heart_red : heart_black)
-      : heart_disabled} // иконка-сердечко с замком или серое
+      : heart_black} // иконка-сердечко с замком или серое
     alt="Избранное"
   />
 </button>
@@ -461,7 +461,7 @@ const Home = () => {
   <img
     src={isAuthenticated
       ? (favorites.includes('ae') ? heart_red : heart_black)
-      : heart_disabled} // иконка-сердечко с замком или серое
+      : heart_black} // иконка-сердечко с замком или серое
     alt="Избранное"
   />
 </button>
