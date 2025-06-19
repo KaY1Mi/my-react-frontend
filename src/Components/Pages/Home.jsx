@@ -57,6 +57,8 @@ const Home = () => {
   const sectionsRef = useRef([]);
   const scrollTimeout = useRef(null);
   const [activeFAQ, setActiveFAQ] = useState(null);
+  const isAuthenticated = !!localStorage.getItem('token'); // пример, подстрой под себя
+
   const handleLanguageChange = useCallback((lang) => {
     setLanguage(lang);
     if (typeof window !== 'undefined') {
@@ -80,12 +82,18 @@ const Home = () => {
   }, [favorites]);
 
   const toggleFavorite = (courseId) => {
-    setFavorites(prev => 
-      prev.includes(courseId) 
-        ? prev.filter(id => id !== courseId) 
+    if (!isAuthenticated) {
+      alert('Чтобы добавить в избранное, войдите в аккаунт');
+      return;
+    }
+  
+    setFavorites(prev =>
+      prev.includes(courseId)
+        ? prev.filter(id => id !== courseId)
         : [...prev, courseId]
     );
   };
+  ;
 
 
   const coursesData = [
@@ -400,15 +408,17 @@ const Home = () => {
                   <img src={dollar} alt="платный курс" />
                 </div>
                 {/* Иконка избранного (изменена только эта часть) */}
-                <button 
-                  onClick={() => toggleFavorite('ux')}
-                  className="absolute top-[72px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
-                >
-                  <img 
-                    src={favorites.includes('ux') ? heart_red : heart_black} 
-                    alt="Избранное" 
-                  />
-                </button>
+                <button
+  onClick={() => toggleFavorite('ux')}
+  className="absolute top-[72px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
+>
+  <img
+    src={isAuthenticated
+      ? (favorites.includes('ux') ? heart_red : heart_black)
+      : heart_disabled} // иконка-сердечко с замком или серое
+    alt="Избранное"
+  />
+</button>
               </div>
               <h4 className='font-bebas text-4xl text-neutal-black leading-none'>{t.h4_ux}</h4>
               <button className='w-full bg-neutal-black text-neutal-white font-bebas text-2xl h-[60px] rounded-xl mt-2' onClick={()=>navigate('/figma-course')}>
@@ -421,15 +431,17 @@ const Home = () => {
               <div className="relative">
                 <img src={figma} alt="Баннер курса по фигма" className='w-full rounded-[10px]'/>
                 {/* Иконка избранного (изменена только эта часть) */}
-                <button 
-                  onClick={() => toggleFavorite('figma')}
-                  className="absolute top-[15px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
-                >
-                  <img 
-                    src={favorites.includes('figma') ? heart_red : heart_black} 
-                    alt="Избранное" 
-                  />
-                </button>
+                <button
+  onClick={() => toggleFavorite('figma')}
+  className="absolute top-[72px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
+>
+  <img
+    src={isAuthenticated
+      ? (favorites.includes('figma') ? heart_red : heart_black)
+      : heart_disabled} // иконка-сердечко с замком или серое
+    alt="Избранное"
+  />
+</button>
               </div>
               <h4 className='font-bebas text-4xl text-neutal-black leading-none'>{t.h4_figma}</h4>
               <button className='w-full bg-neutal-black text-neutal-white font-bebas text-2xl h-[60px] rounded-xl mt-2' onClick={()=>navigate('/figma-course')}>
@@ -442,15 +454,17 @@ const Home = () => {
               <div className="relative">
                 <img src={ae} alt="Баннер курса по фигма" className='w-full rounded-[10px]'/>
                 {/* Иконка избранного (изменена только эта часть) */}
-                <button 
-                  onClick={() => toggleFavorite('ae')}
-                  className="absolute top-[15px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
-                >
-                  <img 
-                    src={favorites.includes('ae') ? heart_red : heart_black} 
-                    alt="Избранное" 
-                  />
-                </button>
+                <button
+  onClick={() => toggleFavorite('ae')}
+  className="absolute top-[72px] right-[15px] w-[54px] h-[54px] bg-neutal-white rounded-full flex items-center justify-center"
+>
+  <img
+    src={isAuthenticated
+      ? (favorites.includes('ae') ? heart_red : heart_black)
+      : heart_disabled} // иконка-сердечко с замком или серое
+    alt="Избранное"
+  />
+</button>
               </div>
               <h4 className='font-bebas text-4xl text-neutal-black leading-none'>{t.h4_ae}</h4>
               <button className='w-full bg-neutal-black text-neutal-white font-bebas text-2xl h-[60px] rounded-xl mt-2' onClick={()=>navigate('/figma-course')}>
