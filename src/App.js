@@ -54,6 +54,8 @@ import ProLesson1 from "./Components/Pages/Lessons/Pro/ProLesson1";
 import ProLesson2 from "./Components/Pages/Lessons/Pro/ProLesson2";
 import ProLesson3 from "./Components/Pages/Lessons/Pro/ProLesson3";
 import Ux1 from "./Components/Pages/Lessons/UX/Ux1";
+import Ux2 from "./Components/Pages/Lessons/UX/Ux2";
+import Ux3 from "./Components/Pages/Lessons/UX/Ux3";
 
 function App() {
   return (
