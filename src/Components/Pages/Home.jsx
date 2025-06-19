@@ -94,11 +94,14 @@ const Home = () => {
     );
   };
   
-  ;
-  if (!isAuthenticated) {
-    navigate('/login');
-    return;
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+  
+  // И никакого return после этого!
+  
   
 
   const coursesData = [
