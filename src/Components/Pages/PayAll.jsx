@@ -166,9 +166,16 @@ const formatCVV = (value) => value.replace(/\D/g, '').slice(0, 3); // тольк
                             <AnimatedCounter/>
                         </div>
 
-                        <button type="submit" className='font-bebas text-white bg-black w-full h-[55px] rounded-[10px] text-xl' onClick={()=>navigate('/ux-one')}>
-                            {t.pay_btn}
-                        </button> 
+                        <button
+  type="submit"
+  className='font-bebas text-white bg-black w-full h-[55px] rounded-[10px] text-xl'
+  onClick={(e) => {
+    e.preventDefault(); // 👈 ОТМЕНА стандартной отправки формы
+    navigate('/ux-one'); // 👈 Переход на страницу урока
+  }}
+>
+  {t.pay_btn}
+</button>
 
                     </form>
                 </div>
